@@ -12,13 +12,12 @@
       color-scheme: dark;
       --bg: #09090b;
       --panel: #141418;
-      --panel2: #19191f;
+      --panel-2: #19191f;
       --line: #303038;
       --text: #f4f4f5;
       --muted: #aaaab4;
       --purple: #8b5cf6;
       --teal: #2dd4bf;
-      --red: #fb7185;
       font: 15px/1.55 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
@@ -30,12 +29,8 @@
       color: var(--text);
     }
 
-    button, input, select, textarea {
-      font: inherit;
-    }
-
+    button, input, select, textarea { font: inherit; }
     button { cursor: pointer; }
-
     [hidden], .hidden { display: none !important; }
 
     .wrap {
@@ -58,7 +53,7 @@
     .brand {
       padding: 0;
       border: 0;
-      background: transparent;
+      background: none;
       color: var(--text);
       font-size: 23px;
       font-weight: 900;
@@ -93,10 +88,10 @@
     .muted, small { color: var(--muted); }
     .small { font-size: 12px; }
 
-    .grid {
+    .grid, .tiles, .choice-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
+      gap: 10px;
     }
 
     .field {
@@ -106,15 +101,18 @@
 
     .field.full { grid-column: 1 / -1; }
 
-    .field label {
+    .field > label {
       color: #d1d1d8;
       font-size: 13px;
       font-weight: 650;
     }
 
-    input, select, textarea {
+    input:not([type="checkbox"]):not([type="radio"]),
+    select,
+    textarea {
       width: 100%;
-      padding: 11px 12px;
+      min-height: 44px;
+      padding: 10px 12px;
       border: 1px solid var(--line);
       border-radius: 9px;
       background: #0e0e11;
@@ -122,7 +120,7 @@
     }
 
     textarea {
-      min-height: 90px;
+      min-height: 100px;
       resize: vertical;
     }
 
@@ -130,7 +128,7 @@
       padding: 10px 13px;
       border: 1px solid var(--line);
       border-radius: 10px;
-      background: var(--panel2);
+      background: var(--panel-2);
       color: var(--text);
       text-align: left;
     }
@@ -141,6 +139,7 @@
       font-weight: 750;
     }
 
+    .btn:disabled { opacity: .6; cursor: wait; }
     .btn:hover, nav button:hover { filter: brightness(1.15); }
 
     .actions {
@@ -149,12 +148,6 @@
       flex-wrap: wrap;
       gap: 9px;
       margin-top: 15px;
-    }
-
-    .tiles, .choice-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
     }
 
     .tile {
@@ -169,23 +162,40 @@
     .choice-card {
       display: flex;
       align-items: center;
+      justify-content: flex-start;
       gap: 12px;
       min-height: 58px;
       padding: 14px 16px;
       border: 1px solid var(--line);
       border-radius: 12px;
-      background: #19191f;
+      background: var(--panel-2);
       color: var(--text);
       font-weight: 600;
       line-height: 1.35;
+      text-align: left;
+      cursor: pointer;
     }
 
-    .choice-card input {
+    .choice-card:hover { border-color: #59417d; }
+
+    .choice-card input[type="checkbox"],
+    .choice-card input[type="radio"] {
+      appearance: auto;
       flex: 0 0 18px;
       width: 18px;
+      min-width: 18px;
       height: 18px;
       margin: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
       accent-color: var(--purple);
+      cursor: pointer;
+    }
+
+    .choice-card span {
+      flex: 1;
+      text-align: left;
     }
 
     .choice-group { margin-top: 18px; }
@@ -204,33 +214,17 @@
       text-decoration: underline;
     }
 
-    .result {
-      padding: 16px;
-      margin-top: 15px;
+    .result, .notice, #message {
+      padding: 14px 16px;
+      margin: 14px 0;
       border: 1px solid #393145;
       border-radius: 12px;
       background: #111014;
     }
 
-    .option {
-      padding-top: 12px;
-      margin-top: 12px;
-      border-top: 1px solid var(--line);
-    }
-
-    .notice, #message {
-      padding: 12px 14px;
-      margin: 14px 0;
-      border: 1px solid #44345e;
-      border-radius: 10px;
-      background: #211936;
-    }
-
     .notice {
       border-left: 3px solid var(--teal);
-      background: #10201e;
       color: #c7d8d5;
-      font-size: 13px;
     }
 
     #message.error {
@@ -416,7 +410,7 @@
   </section>
 
   <div id="appScreen" class="layout hidden">
-    <nav id="mainNav" aria-label="Main navigation">
+    <nav aria-label="Main navigation">
       <button class="active" data-page="home">Dashboard</button>
       <button data-page="training">Training</button>
       <button data-page="profile">Player profile</button>
@@ -427,8 +421,7 @@
         <div class="card">
           <p class="eyebrow">YOUR PLAYER DASHBOARD</p>
           <h1 id="welcomeTitle">Welcome to SAINTS PITCH.</h1>
-          <p id="welcomeText" class="muted">Your profile and next steps will appear here.</p>
-          <div class="result" id="playerSummary"></div>
+          <div id="playerSummary" class="result"></div>
         </div>
       </section>
 
@@ -460,26 +453,20 @@
   const hide = id => $(id).classList.add("hidden");
   const show = id => $(id).classList.remove("hidden");
 
-  let supabaseClient = null;
-  let currentUser = null;
-  let mode = "login";
-  let stepIndex = 0;
-  let stepList = [];
-  let answers = {};
-  let currentStepIsSignup = false;
-  let coachCallRequested = false;
-
   const storageUrl = "saintsPitch.supabaseUrl";
   const storageKey = "saintsPitch.publicKey";
   const draftKey = "saintsPitch.onboardingDraft";
 
-  const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, character => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
-  }[character]));
+  let supabaseClient = null;
+  let currentUser = null;
+  let mode = "login";
+  let answers = {};
+  let stepIndex = 0;
+  let coachCallRequested = false;
+
+  const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[char]));
 
   function say(text, isError = false) {
     const box = $("message");
@@ -489,15 +476,10 @@
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  function showOnly(screenId) {
-    [
-      "welcomeScreen",
-      "connectScreen",
-      "accountScreen",
-      "onboardingScreen",
-      "appScreen"
-    ].forEach(id => hide(id));
-    show(screenId);
+  function showOnly(id) {
+    ["welcomeScreen", "connectScreen", "accountScreen", "onboardingScreen", "appScreen"]
+      .forEach(screen => hide(screen));
+    show(id);
   }
 
   function connectSupabase(url, key) {
@@ -521,6 +503,7 @@
       }
       if (event === "SIGNED_OUT") {
         currentUser = null;
+        hide("signOutButton");
         showOnly("welcomeScreen");
       }
     });
@@ -537,11 +520,8 @@
   if (savedUrl && savedKey) {
     $("projectUrl").value = savedUrl;
     $("publicKey").value = savedKey;
-    try {
-      connectSupabase(savedUrl, savedKey);
-    } catch (error) {
-      say(error.message, true);
-    }
+    try { connectSupabase(savedUrl, savedKey); }
+    catch (error) { say(error.message, true); }
   }
 
   $("connectButton").addEventListener("click", () => {
@@ -550,8 +530,8 @@
         $("projectUrl").value.trim().replace(/\/$/, ""),
         $("publicKey").value.trim()
       );
-      say("SAINTS PITCH is connected.");
       showOnly("welcomeScreen");
+      say("SAINTS PITCH is connected.");
     } catch (error) {
       say(error.message, true);
     }
@@ -575,34 +555,28 @@
   });
 
   $("returningButton").addEventListener("click", () => {
-    if (!supabaseClient) {
-      showOnly("connectScreen");
-      return;
-    }
+    if (!supabaseClient) return showOnly("connectScreen");
     mode = "login";
     renderAccountMode();
     showOnly("accountScreen");
   });
 
   $("newPlayerButton").addEventListener("click", () => {
-    if (!supabaseClient) {
-      showOnly("connectScreen");
-      return;
-    }
+    if (!supabaseClient) return showOnly("connectScreen");
     mode = "signup";
     renderAccountMode();
     showOnly("accountScreen");
   });
 
   function renderAccountMode() {
-    const signingUp = mode === "signup";
-    $("accountTitle").textContent = signingUp ? "Create your player account" : "Returning player sign in";
-    $("accountSubmit").textContent = signingUp ? "Create account" : "Sign in";
-    $("accountNameField").classList.toggle("hidden", !signingUp);
-    $("accountPassword").autocomplete = signingUp ? "new-password" : "current-password";
-    $("accountSwitch").textContent = signingUp ? "Already have an account?" : "New to SAINTS PITCH?";
-    $("accountSwitchButton").textContent = signingUp ? "Return to sign in" : "Start new player setup";
-    $("forgotButton").classList.toggle("hidden", signingUp);
+    const signup = mode === "signup";
+    $("accountTitle").textContent = signup ? "Create your player account" : "Returning player sign in";
+    $("accountSubmit").textContent = signup ? "Create account" : "Sign in";
+    $("accountNameField").classList.toggle("hidden", !signup);
+    $("accountPassword").autocomplete = signup ? "new-password" : "current-password";
+    $("accountSwitch").textContent = signup ? "Already have an account?" : "New to SAINTS PITCH?";
+    $("accountSwitchButton").textContent = signup ? "Return to sign in" : "Start new player setup";
+    $("forgotButton").classList.toggle("hidden", signup);
     hide("resetPasswordPanel");
   }
 
@@ -638,17 +612,15 @@
             }
           }
         });
-
         if (error) throw error;
 
-        const draft = { display_name: name };
-        localStorage.setItem(`${draftKey}:${email}`, JSON.stringify(draft));
+        localStorage.setItem(`${draftKey}:${email}`, JSON.stringify({ display_name: name }));
 
         if (data.session?.user) {
-          answers = draft;
+          answers = { display_name: name };
           startPlayerQuestions();
         } else {
-          say("Account created. Check your email to verify it. Then return here and sign in to finish your player setup.");
+          say("Account created. Check your email to verify it, then return here and sign in to finish your player setup.");
           mode = "login";
           renderAccountMode();
         }
@@ -729,380 +701,184 @@
 
   const focusByPosition = {
     "Goalkeeper (GK)": {
-      "Technical": [
-        "Set position, balance and handling",
-        "Footwork across the goal",
-        "Collecting or safely parrying crosses",
-        "One-on-one decisions",
-        "Short passing, throws and distribution"
-      ],
-      "Tactical": [
-        "Starting position and angles",
-        "Communicating with defenders",
-        "Reading through-balls and crosses",
-        "Choosing when to stay or come out"
-      ],
-      "Speed & Agility": [
-        "Quick side steps and repositioning",
-        "Recovering safely for a second save",
-        "Short bursts and changes of direction"
-      ],
-      "Endurance & Power": [
-        "Jumping and landing control",
-        "Building general strength safely",
-        "Staying focused through quieter periods"
-      ],
-      "Psychological & Cognitive": [
-        "Resetting after a mistake",
-        "Making calm decisions under pressure",
-        "Clear and confident communication"
-      ]
+      "Technical": ["Set position and balance", "Handling shots cleanly", "Catching and parrying safely", "One-on-one technique", "Passing and distribution"],
+      "Tactical": ["Choosing starting positions", "Reading through balls", "Deciding when to claim crosses", "Communicating with defenders"],
+      "Speed & Agility": ["Quick footwork across goal", "Moving into position for a second save", "Safe changes of direction"],
+      "Endurance & Power": ["Jumping and landing control", "Building general strength safely", "Staying focused throughout a match"],
+      "Psychological & Cognitive": ["Resetting after conceding", "Staying calm under pressure", "Making clear decisions"]
     },
-
     "Center-Back (CB)": {
-      "Technical": [
-        "Balanced one-on-one defending",
-        "Safe tackling and blocking",
-        "Heading technique and timing",
-        "First touch and passing out from the back",
-        "Clearing with either foot"
-      ],
-      "Tactical": [
-        "Holding the defensive line",
-        "Covering a teammate",
-        "Tracking forward runs",
-        "Knowing when to step in or drop"
-      ],
-      "Speed & Agility": [
-        "Turning and accelerating safely",
-        "Lateral movement while defending",
-        "Recovering when an opponent runs in behind"
-      ],
-      "Endurance & Power": [
-        "Jumping and landing control",
-        "Balance in physical contests",
-        "Maintaining movement quality through a match"
-      ],
-      "Psychological & Cognitive": [
-        "Staying composed when building play",
-        "Making clear decisions under pressure",
-        "Communicating and organising teammates"
-      ]
+      "Technical": ["Defending 1v1", "Tackling safely and at the right time", "Accurate short passing", "Playing longer passes when available"],
+      "Tactical": ["Positioning between the ball and goal", "Tracking forwards", "Covering a defensive partner", "Reading passes into the penalty area"],
+      "Speed & Agility": ["Turning and recovering", "Moving quickly across the defensive line", "Reacting to changes of direction"],
+      "Endurance & Power": ["Building safe strength for duels", "Jumping and landing safely", "Maintaining effort across a match"],
+      "Psychological & Cognitive": ["Staying composed under pressure", "Communicating clearly", "Recovering focus after mistakes"]
     },
-
-    "Left-Back (LB)": null,
-    "Right-Back (RB)": null,
-    "Left Wing-Back (LWB)": null,
-    "Right Wing-Back (RWB)": null,
-    "Sweeper (SW)": null,
-
+    "Left-Back (LB)": {
+      "Technical": ["Defending wide 1v1", "Crossing from the left", "Passing inside under pressure", "First touch near the touchline"],
+      "Tactical": ["When to overlap", "When to stay back", "Covering the left channel", "Tracking opposing right-sided attackers"],
+      "Speed & Agility": ["Short acceleration down the left", "Turning to recover toward your own goal", "Changing direction in wide areas"],
+      "Endurance & Power": ["Building repeat running capacity", "Safe lower-body strength", "Maintaining effort up and down the left side"],
+      "Psychological & Cognitive": ["Choosing calmly under pressure", "Communicating with the left centre-back", "Resetting after a difficult moment"]
+    },
+    "Right-Back (RB)": {
+      "Technical": ["Defending wide 1v1", "Crossing from the right", "Passing inside under pressure", "First touch near the touchline"],
+      "Tactical": ["When to overlap", "When to stay back", "Covering the right channel", "Tracking opposing left-sided attackers"],
+      "Speed & Agility": ["Short acceleration down the right", "Turning to recover toward your own goal", "Changing direction in wide areas"],
+      "Endurance & Power": ["Building repeat running capacity", "Safe lower-body strength", "Maintaining effort up and down the right side"],
+      "Psychological & Cognitive": ["Choosing calmly under pressure", "Communicating with the right centre-back", "Resetting after a difficult moment"]
+    },
+    "Left Wing-Back (LWB)": {
+      "Technical": ["First touch while moving forward", "Crossing from the left", "Defending wide 1v1", "Combining with the left winger"],
+      "Tactical": ["Timing forward runs", "Recovering into the defensive line", "Finding space on the left", "Choosing when to support or hold position"],
+      "Speed & Agility": ["Accelerating into space", "Recovering quickly after an attack", "Changing direction along the left flank"],
+      "Endurance & Power": ["Building repeat running capacity", "Safe lower-body strength", "Keeping energy across both halves"],
+      "Psychological & Cognitive": ["Managing decisions when space opens", "Communicating with nearby teammates", "Staying confident after errors"]
+    },
+    "Right Wing-Back (RWB)": {
+      "Technical": ["First touch while moving forward", "Crossing from the right", "Defending wide 1v1", "Combining with the right winger"],
+      "Tactical": ["Timing forward runs", "Recovering into the defensive line", "Finding space on the right", "Choosing when to support or hold position"],
+      "Speed & Agility": ["Accelerating into space", "Recovering quickly after an attack", "Changing direction along the right flank"],
+      "Endurance & Power": ["Building repeat running capacity", "Safe lower-body strength", "Keeping energy across both halves"],
+      "Psychological & Cognitive": ["Managing decisions when space opens", "Communicating with nearby teammates", "Staying confident after errors"]
+    },
+    "Sweeper (SW)": {
+      "Technical": ["Covering behind the defensive line", "Winning the ball safely", "Passing forward after regaining possession", "Using a calm first touch"],
+      "Tactical": ["Reading danger early", "Covering space behind defenders", "Choosing when to step in", "Helping organise the defensive shape"],
+      "Speed & Agility": ["Turning to cover space", "Accelerating to loose balls", "Moving across behind the line"],
+      "Endurance & Power": ["Safe strength for challenges", "Maintaining concentration and movement", "Building general fitness gradually"],
+      "Psychological & Cognitive": ["Staying patient", "Communicating early", "Making quick but calm decisions"]
+    },
     "Defensive Midfielder (DM)": {
-      "Technical": [
-        "Scanning before receiving",
-        "First touch under pressure",
-        "Passing forward or switching play",
-        "Turning away from pressure",
-        "Winning and keeping the ball safely"
-      ],
-      "Tactical": [
-        "Protecting space in front of the defence",
-        "Choosing when to press or hold position",
-        "Supporting centre-backs",
-        "Helping the team keep possession"
-      ],
-      "Speed & Agility": [
-        "Short acceleration into space",
-        "Changing direction while tracking play",
-        "Recovering quickly after transitions"
-      ],
-      "Endurance & Power": [
-        "Building general strength safely",
-        "Maintaining movement across a match",
-        "Balance when challenging for the ball"
-      ],
-      "Psychological & Cognitive": [
-        "Checking surroundings before receiving",
-        "Staying patient and disciplined",
-        "Choosing safe options under pressure"
-      ]
+      "Technical": ["Receiving with pressure nearby", "Turning away from pressure", "Short and medium passing", "Tackling and intercepting safely"],
+      "Tactical": ["Protecting the space in front of defenders", "Finding passing lanes", "Choosing when to hold or move forward", "Tracking runners through midfield"],
+      "Speed & Agility": ["Quick turns in tight spaces", "Moving to support the ball", "Reacting to loose balls"],
+      "Endurance & Power": ["Building repeat effort safely", "General strength and balance", "Keeping concentration as the game changes"],
+      "Psychological & Cognitive": ["Scanning before receiving", "Staying calm when pressed", "Resetting after losing possession"]
     },
-
     "Central Midfielder (CM)": {
-      "Technical": [
-        "First touch and receiving",
-        "Passing over short and longer distances",
-        "Turning and carrying the ball",
-        "Using both feet where comfortable"
-      ],
-      "Tactical": [
-        "Finding space to support teammates",
-        "Scanning and awareness",
-        "Switching play when space opens",
-        "Moving between attack and defence"
-      ],
-      "Speed & Agility": [
-        "Quick support runs",
-        "Changing direction to find space",
-        "Short bursts to press or recover"
-      ],
-      "Endurance & Power": [
-        "Building general fitness safely",
-        "Keeping movement consistent",
-        "Balance and control in challenges"
-      ],
-      "Psychological & Cognitive": [
-        "Making decisions with limited time",
-        "Staying available after passing",
-        "Communicating simple options"
-      ]
+      "Technical": ["First touch in central spaces", "Passing with both feet", "Receiving on the half-turn", "Carrying the ball into space"],
+      "Tactical": ["Finding space between opponents", "Supporting the player on the ball", "Switching play", "Moving to help in attack and defence"],
+      "Speed & Agility": ["Quick turns in midfield", "Moving into passing lanes", "Changing direction to support play"],
+      "Endurance & Power": ["Building steady match fitness", "Safe whole-body strength", "Repeating runs throughout a match"],
+      "Psychological & Cognitive": ["Scanning before the ball arrives", "Choosing when to pass or carry", "Staying composed after mistakes"]
     },
-
     "Attacking Midfielder (AM)": {
-      "Technical": [
-        "Receiving on the half-turn",
-        "Close control in tight spaces",
-        "Through-passes and combinations",
-        "Finishing near the box"
-      ],
-      "Tactical": [
-        "Finding space between defenders",
-        "Linking midfield and attack",
-        "Choosing when to pass, carry or shoot",
-        "Moving after creating a pass"
-      ],
-      "Speed & Agility": [
-        "Quick turns in tight areas",
-        "Short changes of pace",
-        "Moving into space after releasing the ball"
-      ],
-      "Endurance & Power": [
-        "Building general strength safely",
-        "Repeating short attacking movements",
-        "Staying balanced when challenged"
-      ],
-      "Psychological & Cognitive": [
-        "Seeing options early",
-        "Taking creative risks at the right time",
-        "Recovering confidence after a missed chance"
-      ]
+      "Technical": ["Receiving between the lines", "Turning toward goal", "Through passes and combination play", "Shooting from outside the area"],
+      "Tactical": ["Finding space behind midfield", "Connecting with forwards", "Choosing when to create or shoot", "Pressing after losing the ball"],
+      "Speed & Agility": ["Quick movement in tight spaces", "Changing direction to receive", "Short bursts toward goal"],
+      "Endurance & Power": ["Building repeat attacking efforts", "Safe strength for balance", "Maintaining sharp movement late in a match"],
+      "Psychological & Cognitive": ["Scanning for teammates and space", "Making creative decisions calmly", "Responding positively to missed chances"]
     },
-
-    "Left Midfielder (LM)": null,
-    "Right Midfielder (RM)": null,
-    "Left Winger (LW)": null,
-    "Right Winger (RW)": null,
-    "Center-Forward (CF)": null,
-    "Striker (ST)": null
-  };
-
-  const sharedFocus = {
-    fullback: {
-      "Technical": [
-        "One-on-one defending out wide",
-        "First touch near the touchline",
-        "Crosses and cutbacks",
-        "Passing inside under pressure",
-        "Carrying the ball forward"
-      ],
-      "Tactical": [
-        "Timing an overlapping run",
-        "Recovering to help defend",
-        "Supporting a winger or midfielder",
-        "Knowing when to attack or hold position"
-      ],
-      "Speed & Agility": [
-        "Short acceleration along the line",
-        "Changing direction to defend",
-        "Recovering after an attacking run"
-      ],
-      "Endurance & Power": [
-        "Building general fitness safely",
-        "Repeating runs with enough recovery",
-        "Balance and control when challenged"
-      ],
-      "Psychological & Cognitive": [
-        "Checking your shoulder before receiving",
-        "Choosing when to cross or pass back",
-        "Staying composed in one-on-one defending"
-      ]
+    "Left Midfielder (LM)": {
+      "Technical": ["Passing and crossing from the left", "First touch while facing the sideline", "Combining with the left-back", "Keeping possession under pressure"],
+      "Tactical": ["Holding width on the left", "Tracking the opposing right-back", "Supporting attacks without leaving gaps", "Choosing when to move inside"],
+      "Speed & Agility": ["Accelerating into left-side space", "Changing direction with the ball", "Recovering to help defend"],
+      "Endurance & Power": ["Building repeat running capacity", "Safe lower-body strength", "Maintaining effort on both sides of play"],
+      "Psychological & Cognitive": ["Choosing when to pass or take on a player", "Communicating with teammates", "Staying confident after losing the ball"]
     },
-
-    wideMid: {
-      "Technical": [
-        "First touch and passing",
-        "Crossing and cutbacks",
-        "Dribbling in one-on-one situations",
-        "Receiving and combining with teammates"
-      ],
-      "Tactical": [
-        "Finding space on the left or right",
-        "Supporting the full-back in defence",
-        "Choosing when to stay wide or move inside",
-        "Timing runs behind the defence"
-      ],
-      "Speed & Agility": [
-        "Short bursts into space",
-        "Changing direction with the ball",
-        "Slowing down and accelerating with control"
-      ],
-      "Endurance & Power": [
-        "Building general fitness safely",
-        "Repeating runs with recovery",
-        "Balance when protecting the ball"
-      ],
-      "Psychological & Cognitive": [
-        "Deciding when to take on a defender",
-        "Scanning before receiving",
-        "Staying confident after losing the ball"
-      ]
+    "Right Midfielder (RM)": {
+      "Technical": ["Passing and crossing from the right", "First touch while facing the sideline", "Combining with the right-back", "Keeping possession under pressure"],
+      "Tactical": ["Holding width on the right", "Tracking the opposing left-back", "Supporting attacks without leaving gaps", "Choosing when to move inside"],
+      "Speed & Agility": ["Accelerating into right-side space", "Changing direction with the ball", "Recovering to help defend"],
+      "Endurance & Power": ["Building repeat running capacity", "Safe lower-body strength", "Maintaining effort on both sides of play"],
+      "Psychological & Cognitive": ["Choosing when to pass or take on a player", "Communicating with teammates", "Staying confident after losing the ball"]
     },
-
-    winger: {
-      "Technical": [
-        "Dribbling and one-on-one skills",
-        "First touch while moving",
-        "Crosses and cutbacks",
-        "Finishing from wide areas"
-      ],
-      "Tactical": [
-        "Timing runs behind defenders",
-        "Choosing when to stay wide or cut inside",
-        "Supporting teammates after a pass",
-        "Tracking back to help defend"
-      ],
-      "Speed & Agility": [
-        "Short acceleration with the ball",
-        "Changing direction at a controlled pace",
-        "Quick steps to create space"
-      ],
-      "Endurance & Power": [
-        "Building general fitness safely",
-        "Repeating short runs with enough rest",
-        "Balance when challenged"
-      ],
-      "Psychological & Cognitive": [
-        "Choosing when to dribble or pass",
-        "Making decisions near the box",
-        "Building confidence after a missed attempt"
-      ]
+    "Left Winger (LW)": {
+      "Technical": ["Dribbling at a defender", "Crossing from the left", "Cutting inside from the left", "Finishing from a wide angle"],
+      "Tactical": ["Holding width to stretch play", "Choosing when to cut inside", "Timing runs behind the right-back", "Pressing the opposing right-back"],
+      "Speed & Agility": ["First-step acceleration", "Changing direction with the ball", "Short bursts into space"],
+      "Endurance & Power": ["Building repeat sprint capacity safely", "Balance when challenged", "Maintaining sharpness late in a match"],
+      "Psychological & Cognitive": ["Choosing when to take on a defender", "Responding to unsuccessful dribbles", "Keeping confidence in front of goal"]
     },
-
-    forward: {
-      "Technical": [
-        "Finishing with placement before power",
-        "First touch under pressure",
-        "Movement to receive a pass",
-        "Link-up and hold-up play",
-        "Heading technique with safe coaching"
-      ],
-      "Tactical": [
-        "Finding space in the penalty area",
-        "Timing runs between or behind defenders",
-        "Linking with midfielders",
-        "Choosing when to press"
-      ],
-      "Speed & Agility": [
-        "Short acceleration into space",
-        "Changing direction to lose a marker",
-        "Reacting to loose balls"
-      ],
-      "Endurance & Power": [
-        "Building general strength safely",
-        "Balance when shielding the ball",
-        "Repeating short movements with recovery"
-      ],
-      "Psychological & Cognitive": [
-        "Staying composed in front of goal",
-        "Choosing when to shoot or pass",
-        "Resetting after a missed chance"
-      ]
+    "Right Winger (RW)": {
+      "Technical": ["Dribbling at a defender", "Crossing from the right", "Cutting inside from the right", "Finishing from a wide angle"],
+      "Tactical": ["Holding width to stretch play", "Choosing when to cut inside", "Timing runs behind the left-back", "Pressing the opposing left-back"],
+      "Speed & Agility": ["First-step acceleration", "Changing direction with the ball", "Short bursts into space"],
+      "Endurance & Power": ["Building repeat sprint capacity safely", "Balance when challenged", "Maintaining sharpness late in a match"],
+      "Psychological & Cognitive": ["Choosing when to take on a defender", "Responding to unsuccessful dribbles", "Keeping confidence in front of goal"]
     },
-
-    general: {
-      "Technical": [
-        "First touch and ball control",
-        "Passing with both feet",
-        "Dribbling and turning",
-        "Finishing or goalkeeping basics"
-      ],
-      "Tactical": [
-        "Understanding space and team shape",
-        "Scanning before receiving",
-        "Knowing when to support or recover"
-      ],
-      "Speed & Agility": [
-        "Balance and comfortable movement",
-        "Changing direction safely",
-        "Short bursts with full recovery"
-      ],
-      "Endurance & Power": [
-        "Building fitness gradually",
-        "Basic strength and body control",
-        "Rest and recovery habits"
-      ],
-      "Psychological & Cognitive": [
-        "Building confidence",
-        "Making decisions under pressure",
-        "Setting a small goal with Coach"
-      ]
+    "Center-Forward (CF)": {
+      "Technical": ["Link-up passing with teammates", "First touch with defenders nearby", "Finishing inside the area", "Holding the ball safely"],
+      "Tactical": ["Choosing when to drop in or run forward", "Combining with wide attackers", "Finding space between defenders", "Pressing the centre-backs"],
+      "Speed & Agility": ["Changing direction to get free", "Short acceleration into space", "Turning quickly after receiving"],
+      "Endurance & Power": ["Safe strength for balance", "Building repeat movement capacity", "Maintaining focus across a match"],
+      "Psychological & Cognitive": ["Scanning before receiving", "Choosing when to link or turn", "Staying positive after missed chances"]
+    },
+    "Striker (ST)": {
+      "Technical": ["Finishing with both feet", "First-time finishing", "Heading safely with good technique", "Controlling passes into feet"],
+      "Tactical": ["Timing runs behind defenders", "Finding space in the penalty area", "Pressing the player on the ball", "Choosing when to stay central or move wide"],
+      "Speed & Agility": ["First-step acceleration", "Changing direction to lose a marker", "Short movements to reach a cross"],
+      "Endurance & Power": ["Building repeat efforts safely", "Balance when challenged", "Maintaining movement late in a match"],
+      "Psychological & Cognitive": ["Staying composed in front of goal", "Resetting after missed chances", "Reading the goalkeeper and defenders"]
     }
   };
 
-  for (const role of ["Left-Back (LB)", "Right-Back (RB)", "Left Wing-Back (LWB)", "Right Wing-Back (RWB)"]) {
-    focusByPosition[role] = sharedFocus.fullback;
+  const steps = [
+    { key: "dateOfBirth", title: "When is your birthday?", help: "This tells us whether a parent or guardian step is needed.", type: "date", required: true },
+    { key: "photoNote", title: "Add a profile photo?", help: "Photo upload can be added later when private storage is set up.", type: "note", note: "You can add a profile photo from your player profile later." },
+    { key: "nationality", title: "What is your nationality?", help: "Optional. You can leave this blank.", type: "text" },
+    { key: "country", title: "Which country do you live in?", help: "Choose your country of residence.", type: "select", required: true, options: ["Australia", "England", "Scotland", "Wales", "Ireland", "United States", "Canada", "New Zealand", "Other"] },
+    { key: "gender", title: "How do you describe your gender?", help: "Optional. Choose “Prefer not to say” if you’d rather not answer.", type: "select", options: ["Prefer not to say", "Girl / woman", "Boy / man", "Non-binary", "I describe it another way"] },
+    { key: "journey", title: "Where are you in your football journey?", help: "Choose the closest fit. You can update this later.", type: "select", required: true, options: ["New to football", "Returning after a break", "Social / community", "Club player", "Working toward trials", "High level / academy", "Professional", "Not sure"] },
+    { key: "position", title: "What position do you play?", help: "Choose one main position. Use the position finder or ask Coach for a call if you’re unsure.", type: "position", required: true },
+    { key: "goals", title: "What would you like help with?", help: "Choose any areas you want to work on. These options match the position you selected.", type: "goals", required: true },
+    { key: "foot", title: "Which foot do you prefer?", help: "Choose the closest fit.", type: "select", required: true, options: ["Right", "Left", "Both", "Not sure"] },
+    { key: "frequency", title: "How often do you train each week?", help: "Choose your usual number of sessions in a week.", type: "select", required: true, options: ["1 time per week", "2 times per week", "3 times per week", "4 times per week", "5 times per week", "6 times per week", "7 times per week"] },
+    { key: "duration", title: "How long is a usual training session?", help: "Choose the closest fit.", type: "select", required: true, options: ["15 minutes", "30 minutes", "45 minutes", "1 hour", "2 hours", "3 hours", "4 hours"] },
+    { key: "space", title: "What space or equipment can you use?", help: "Select what you have, then describe your actual space or equipment below.", type: "equipment", options: ["Small space at home", "Ball", "Cones or markers", "Wall or rebounder", "Gym", "Club training", "Pitch access", "No equipment yet"] },
+    { key: "nutrition", title: "What should food ideas consider?", help: "These are preferences, not medical nutrition advice.", type: "multi", options: ["No preference", "Vegetarian", "Vegan", "Halal", "Kosher", "Gluten-free preference", "Dairy-free preference", "Cultural or religious needs", "Budget-friendly", "Discuss with Coach"] },
+    { key: "nutritionNotes", title: "Any food needs Coach should know?", help: "Optional. For allergies or medical needs, involve a qualified professional.", type: "textarea" },
+    { key: "matchDay", title: "What would you like to track on match day?", help: "Choose anything that would help you reflect.", type: "multi", options: ["Minutes played", "Position played", "Confidence", "One thing I did well", "One thing to practise", "Questions for Coach", "I’m not playing matches yet"] },
+    { key: "recovery", title: "What would you like to check in about after training?", help: "Optional. Don’t use this for urgent medical help.", type: "multi", options: ["Energy", "Sleep routine", "Rest days", "How training felt", "Progress over time", "Something for Coach"] },
+    { key: "guardianEmail", title: "Parent or guardian email", help: "Required for players under 16.", type: "email" }
+  ];
+
+  let stepIndex = 0;
+
+  function currentStep() { return steps[stepIndex]; }
+
+  function renderAccountMode() {
+    const signup = mode === "signup";
+    $("accountTitle").textContent = signup ? "Create your player account" : "Returning player sign in";
+    $("accountSubmit").textContent = signup ? "Create account" : "Sign in";
+    $("accountNameField").classList.toggle("hidden", !signup);
+    $("accountPassword").autocomplete = signup ? "new-password" : "current-password";
+    $("accountSwitch").textContent = signup ? "Already have an account?" : "New to SAINTS PITCH?";
+    $("accountSwitchButton").textContent = signup ? "Return to sign in" : "Start new player setup";
+    $("forgotButton").classList.toggle("hidden", signup);
+    hide("resetPasswordPanel");
   }
 
-  focusByPosition["Sweeper (SW)"] = {
-    "Technical": [
-      "Defending space behind teammates",
-      "Safe tackling and blocking",
-      "First touch and passing out from defence",
-      "Clearing safely with either foot"
-    ],
-    "Tactical": [
-      "Reading danger early",
-      "Covering behind the defensive line",
-      "Communicating with defenders and goalkeeper",
-      "Choosing when to hold position or step forward"
-    ],
-    "Speed & Agility": [
-      "Turning and recovering into space",
-      "Changing direction while tracking play",
-      "Short acceleration to cover a teammate"
-    ],
-    "Endurance & Power": [
-      "Building general fitness safely",
-      "Balance and body control",
-      "Maintaining focus through a match"
-    ],
-    "Psychological & Cognitive": [
-      "Staying calm under pressure",
-      "Making decisions early",
-      "Organising teammates clearly"
-    ]
-  };
+  function renderPositionQuiz() {
+    const answersForQuiz = {
+      hands: ["Goalkeeper (GK)", "Center-Back (CB)", "Sweeper (SW)"],
+      defend: ["Center-Back (CB)", "Left-Back (LB)", "Right-Back (RB)", "Defensive Midfielder (DM)"],
+      pass: ["Defensive Midfielder (DM)", "Central Midfielder (CM)", "Left Midfielder (LM)", "Right Midfielder (RM)"],
+      create: ["Attacking Midfielder (AM)", "Left Winger (LW)", "Right Winger (RW)", "Central Midfielder (CM)"],
+      finish: ["Striker (ST)", "Center-Forward (CF)", "Left Winger (LW)", "Right Winger (RW)"],
+      run: ["Left Wing-Back (LWB)", "Right Wing-Back (RWB)", "Left Winger (LW)", "Right Winger (RW)"]
+    };
 
-  for (const role of ["Left Midfielder (LM)", "Right Midfielder (RM)"]) {
-    focusByPosition[role] = sharedFocus.wideMid;
+    const selected = $("quizAnswer").value;
+    const results = $("quizResults");
+    if (!selected) {
+      results.innerHTML = `<p class="notice">Choose an answer first to see positions to explore.</p>`;
+      return;
+    }
+
+    results.innerHTML = `<div class="result"><h3>Positions you could explore</h3>${
+      answersForQuiz[selected].map(position =>
+        `<p><button class="inline-link" type="button" data-position-choice="${escapeHtml(position)}">Choose ${escapeHtml(position)}</button></p>`
+      ).join("")
+    }</div>`;
   }
-
-  for (const role of ["Left Winger (LW)", "Right Winger (RW)"]) {
-    focusByPosition[role] = sharedFocus.winger;
-  }
-
-  for (const role of ["Center-Forward (CF)", "Striker (ST)"]) {
-    focusByPosition[role] = sharedFocus.forward;
-  }
-
-  const generalFocus = sharedFocus.general;
 
   function renderStep() {
-    const step = stepList[stepIndex];
-    if (!step) return finishSetup();
-
-    $("stepCount").textContent = `Step ${stepIndex + 1} of ${stepList.length}`;
+    const step = currentStep();
+    $("stepCount").textContent = `Step ${stepIndex + 1} of ${steps.length}`;
+    $("stepNextButton").textContent = stepIndex === steps.length - 1 ? "Finish setup" : "Continue";
     $("stepBackButton").disabled = stepIndex === 0;
-    $("stepNextButton").textContent = stepIndex === stepList.length - 1 ? "Finish setup" : "Continue";
 
     const current = answers[step.key];
     let control = "";
@@ -1110,7 +886,7 @@
     if (step.type === "select") {
       control = `<select id="answer"><option value="">Choose one</option>${
         step.options.map(option =>
-          `<option ${current === option ? "selected" : ""}>${escapeHtml(option)}</option>`
+          `<option value="${escapeHtml(option)}" ${current === option ? "selected" : ""}>${escapeHtml(option)}</option>`
         ).join("")
       }</select>`;
     } else if (step.type === "position") {
@@ -1118,7 +894,7 @@
         positions.map(([name, category]) =>
           `<label class="choice-card">
             <input type="radio" name="answer" value="${escapeHtml(name)}" ${current === name ? "checked" : ""}>
-            <span>${escapeHtml(name)}</span>
+            <span>${escapeHtml(name)} <small>· ${escapeHtml(category)}</small></span>
           </label>`
         ).join("")
       }</div>
@@ -1127,17 +903,17 @@
       </p>
       <div id="positionQuiz" class="result hidden">
         <h3>Position finder</h3>
-        <p class="muted">Choose what sounds interesting. These ideas are a starting point, not a final answer.</p>
+        <p class="muted">Pick what sounds most like you. These are ideas to discuss with Coach.</p>
         <div class="field">
           <label for="quizAnswer">What do you enjoy most?</label>
           <select id="quizAnswer">
             <option value="">Choose one</option>
-            <option value="hands">Organising and using my hands</option>
-            <option value="defend">Defending and reading danger</option>
+            <option value="hands">Organising, reacting and defending</option>
+            <option value="defend">Protecting space and stopping attacks</option>
             <option value="pass">Passing and linking play</option>
-            <option value="create">Creating chances</option>
-            <option value="finish">Attacking the goal</option>
-            <option value="run">Running into space</option>
+            <option value="create">Creating chances for teammates</option>
+            <option value="finish">Attacking the goal and finishing</option>
+            <option value="run">Running into space and supporting play</option>
           </select>
         </div>
         <div class="actions">
@@ -1147,21 +923,26 @@
         <div id="quizResults" aria-live="polite"></div>
       </div>`;
     } else if (step.type === "goals") {
-      const groups = focusByPosition[answers.position] || generalFocus;
+      const focus = focusByPosition[answers.position] || focusByPosition["Central Midfielder (CM)"];
       const selected = Array.isArray(current) ? current : [];
-      control = Object.entries(groups).map(([category, options]) =>
-        `<section class="choice-group">
-          <h3>${escapeHtml(category)}</h3>
-          <div class="choice-grid">${options.map(option =>
-            `<label class="choice-card">
-              <input type="checkbox" name="answer" value="${escapeHtml(category + ": " + option)}" ${selected.includes(category + ": " + option) ? "checked" : ""}>
-              <span>${escapeHtml(option)}</span>
-            </label>`
-          ).join("")}</div>
-        </section>`
-      ).join("");
-    } else if (step.type === "equipment") {
-      const selected = Array.isArray(current?.selected) ? current.selected : [];
+      control = `<p class="pill">${escapeHtml(answers.position || "")}</p>${
+        Object.entries(focus).map(([category, options]) =>
+          `<section class="choice-group">
+            <h3>${escapeHtml(category)}</h3>
+            <div class="choice-grid">${options.map(option => {
+              const value = `${category}: ${option}`;
+              return `<label class="choice-card">
+                <input type="checkbox" name="answer" value="${escapeHtml(value)}" ${selected.includes(value) ? "checked" : ""}>
+                <span>${escapeHtml(option)}</span>
+              </label>`;
+            }).join("")}</div>
+          </section>`
+        ).join("")
+      }`;
+    } else if (step.type === "multi" || step.type === "equipment") {
+      const selected = step.type === "equipment"
+        ? (Array.isArray(current?.selected) ? current.selected : [])
+        : (Array.isArray(current) ? current : []);
       control = `<div class="choice-grid">${
         step.options.map(option =>
           `<label class="choice-card">
@@ -1169,24 +950,16 @@
             <span>${escapeHtml(option)}</span>
           </label>`
         ).join("")
-      }</div>
-      <div class="field" style="margin-top:14px">
-        <label for="equipmentNotes">Tell us what you have or what you need</label>
-        <textarea id="equipmentNotes" maxlength="500" placeholder="For example: a driveway, a park, one ball, or no safe space at home.">${escapeHtml(current?.notes || "")}</textarea>
-      </div>`;
-    } else if (step.type === "multi") {
-      const selected = Array.isArray(current) ? current : [];
-      control = `<div class="choice-grid">${
-        step.options.map(option =>
-          `<label class="choice-card">
-            <input type="checkbox" name="answer" value="${escapeHtml(option)}" ${selected.includes(option) ? "checked" : ""}>
-            <span>${escapeHtml(option)}</span>
-          </label>`
-        ).join("")
-      }</div>`;
+      }</div>${
+        step.type === "equipment" ? `
+          <div class="field" style="margin-top:14px">
+            <label for="equipmentNotes">Tell us what you have or what you need</label>
+            <textarea id="equipmentNotes" maxlength="500" placeholder="For example: a driveway, a park, one ball, or no safe space at home.">${escapeHtml(current?.notes || "")}</textarea>
+          </div>` : ""
+      }`;
     } else if (step.type === "textarea") {
       control = `<textarea id="answer" maxlength="1200">${escapeHtml(current || "")}</textarea>`;
-    } else if (step.type === "skip") {
+    } else if (step.type === "note") {
       control = `<div class="notice">${escapeHtml(step.note)}</div>`;
     } else {
       control = `<input id="answer" type="${escapeHtml(step.type)}" value="${escapeHtml(current || "")}" ${step.type === "date" ? `max="${new Date().toISOString().slice(0, 10)}"` : ""}>`;
@@ -1204,41 +977,18 @@
     if (step.type === "goals" || step.type === "multi" || step.type === "equipment") {
       const selected = [...document.querySelectorAll('input[name="answer"]:checked')].map(input => input.value);
       if (step.type === "equipment") {
-        return {
-          selected,
-          notes: $("equipmentNotes")?.value.trim() || ""
-        };
+        return { selected, notes: $("equipmentNotes")?.value.trim() || "" };
       }
       return selected;
     }
 
-    if (step.type === "skip") return "skipped";
+    if (step.type === "note") return "skipped";
     return $("answer")?.value.trim() || "";
   }
 
   function startPlayerQuestions() {
-    currentStepIsSignup = false;
+    answers.dateOfBirth ||= "";
     stepIndex = 0;
-    stepList = [
-      { key: "dateOfBirth", title: "When is your birthday?", help: "We use this to show the right player and guardian steps.", type: "date", required: true },
-      { key: "profilePhotoNote", title: "Add a profile photo?", help: "Optional. Photo upload needs private storage to be connected.", type: "skip", note: "You can add a photo later when profile photo storage is enabled." },
-      { key: "nationality", title: "What is your nationality?", help: "Optional. You can skip this.", type: "text" },
-      { key: "country", title: "Which country do you live in?", help: "Choose your country of residence.", type: "select", required: true, options: ["Australia", "England", "Scotland", "Wales", "Ireland", "United States", "Canada", "New Zealand", "Other"] },
-      { key: "gender", title: "How do you describe your gender?", help: "Optional. Choose “Prefer not to say” if you don’t want to answer.", type: "select", options: ["Prefer not to say", "Girl / woman", "Boy / man", "Non-binary", "I describe it another way"] },
-      { key: "journey", title: "Where are you in your football journey?", help: "Pick the closest fit. You can change it later.", type: "select", required: true, options: ["New to football", "Returning after a break", "Social / community", "Club player", "Working toward trials", "High level / academy", "Professional", "Not sure — help me work it out"] },
-      { key: "position", title: "What is your main position?", help: "Choose one. If you’re unsure, use the position finder or ask Coach for a call.", type: "position", required: true },
-      { key: "goals", title: "What would you like help with?", help: "Choose as many as you like. Options are tailored to the position you selected.", type: "goals", required: true },
-      { key: "preferredFoot", title: "Which foot do you prefer?", help: "Choose the closest fit.", type: "select", required: true, options: ["Right", "Left", "Both", "Not sure"] },
-      { key: "trainingFrequency", title: "How often do you train each week?", help: "Choose a number of sessions for a usual week.", type: "select", required: true, options: ["1 time per week", "2 times per week", "3 times per week", "4 times per week", "5 times per week", "6 times per week", "7 times per week"] },
-      { key: "trainingDuration", title: "How long is a usual training session?", help: "Choose the closest fit. This can vary week to week.", type: "select", required: true, options: ["15 minutes", "30 minutes", "45 minutes", "1 hour", "2 hours", "3 hours", "4 hours"] },
-      { key: "trainingSpace", title: "What space or equipment can you use?", help: "Choose anything you have, then add details in your own words.", type: "equipment", options: ["Small space at home", "Ball", "Cones or markers", "Wall or rebounder", "Gym", "Club training", "Pitch access", "No equipment yet"] },
-      { key: "nutritionPreferences", title: "What should food ideas consider?", help: "Optional. These are preferences, not medical nutrition advice.", type: "multi", options: ["No preference", "Vegetarian", "Vegan", "Halal", "Kosher", "Gluten-free preference", "Dairy-free preference", "Cultural or religious needs", "Budget-friendly", "Discuss with Coach"] },
-      { key: "nutritionNotes", title: "Any food needs Coach should know?", help: "Optional. For allergies or medical needs, involve a qualified professional.", type: "textarea" },
-      { key: "matchDayPreferences", title: "What would you like to track on match day?", help: "Choose anything useful to you.", type: "multi", options: ["Minutes played", "Position played", "Confidence", "One thing I did well", "One thing to practise", "Questions for Coach", "I’m not playing matches yet"] },
-      { key: "recoveryPreferences", title: "What would you like to check in about after training?", help: "Optional. Don’t use this for urgent medical help.", type: "multi", options: ["Energy", "Sleep routine", "Rest days", "How training felt", "Progress over time", "Something for Coach"] },
-      { key: "guardianEmail", title: "Parent or guardian email", help: "Required for players under 16. Otherwise you can skip this question.", type: "email" }
-    ];
-
     renderStep();
     showOnly("onboardingScreen");
   }
@@ -1255,62 +1005,14 @@
     return age;
   }
 
-  function renderQuizResults() {
-    const preference = $("quizAnswer")?.value;
-    if (!preference) {
-      $("quizResults").innerHTML = `<p class="notice">Choose an answer to see some roles to explore.</p>`;
-      return;
-    }
-
-    const ideas = {
-      hands: [
-        ["Goalkeeper (GK)", "Organises, reacts and protects the goal."],
-        ["Center-Back (CB)", "Reads danger and helps organise the defence."],
-        ["Sweeper (SW)", "Reads danger and covers space behind the defence."]
-      ],
-      defend: [
-        ["Center-Back (CB)", "Protects central areas and reads forward play."],
-        ["Left-Back (LB)", "Defends wide areas and can support attacks."],
-        ["Defensive Midfielder (DM)", "Helps protect the defence and connect play."]
-      ],
-      pass: [
-        ["Central Midfielder (CM)", "Connects play through passing and movement."],
-        ["Defensive Midfielder (DM)", "Receives under pressure and helps build attacks."],
-        ["Attacking Midfielder (AM)", "Links midfield and forwards."]
-      ],
-      create: [
-        ["Attacking Midfielder (AM)", "Finds space and creates chances centrally."],
-        ["Left Winger (LW)", "Creates chances from wide areas."],
-        ["Central Midfielder (CM)", "Links teammates and helps create attacks."]
-      ],
-      finish: [
-        ["Striker (ST)", "Finds space near goal and finishes chances."],
-        ["Center-Forward (CF)", "Links play and threatens the goal."],
-        ["Right Winger (RW)", "Attacks from wide areas and can score."]
-      ],
-      run: [
-        ["Left Winger (LW)", "Uses wide space to move the team forward."],
-        ["Right Wing-Back (RWB)", "Times runs down the side of the pitch."],
-        ["Striker (ST)", "Times runs between or behind defenders."]
-      ]
-    };
-
-    $("quizResults").innerHTML = `<div class="result"><h3>Positions you could explore</h3>${
-      ideas[preference].map(([name, description]) =>
-        `<div class="option"><strong>${escapeHtml(name)}</strong><p>${escapeHtml(description)}</p><button class="inline-link" type="button" data-position-choice="${escapeHtml(name)}">Choose ${escapeHtml(name)}</button></div>`
-      ).join("")
-    }<p class="small muted">These are options to try, not a permanent decision.</p></div>`;
-  }
-
   $("question").addEventListener("click", event => {
     if (event.target.id === "openQuizButton") show("positionQuiz");
-    if (event.target.id === "showQuizResults") renderQuizResults();
+    if (event.target.id === "showQuizResults") renderPositionQuiz();
 
     if (event.target.id === "askCoachCall") {
       coachCallRequested = true;
       answers.position = "Position chat requested";
-      document.querySelectorAll('input[name="answer"]').forEach(input => { input.checked = false; });
-      $("quizResults").innerHTML = `<p class="notice">Your request for a position call with Coach will be saved with your profile.</p>`;
+      $("quizResults").innerHTML = `<p class="notice">Your request for a position call will be saved with your player profile.</p>`;
     }
 
     const choice = event.target.closest("[data-position-choice]");
@@ -1327,38 +1029,20 @@
 
   $("stepBackButton").addEventListener("click", () => {
     if (stepIndex > 0) {
+      const step = currentStep();
+      answers[step.key] = readAnswer(step);
       stepIndex--;
       renderStep();
     }
   });
 
-  $("leaveSetupButton").addEventListener("click", () => {
-    if (currentStepIsSignup) {
-      showOnly("welcomeScreen");
-    } else {
-      say("Finish your setup before opening your dashboard.");
-    }
-  });
-
   $("stepNextButton").addEventListener("click", async () => {
-    const step = stepList[stepIndex];
+    const step = currentStep();
     const answer = readAnswer(step);
     const empty = Array.isArray(answer) ? answer.length === 0 : !answer;
 
     if (step.required && empty) {
       return say("Choose an answer before continuing.", true);
-    }
-
-    answers[step.key] = answer;
-
-    if (step.key === "position") {
-      coachCallRequested = answer === "Position chat requested";
-    }
-
-    if (step.key === "dateOfBirth" && ageFromDate(answer) < 16) {
-      stepList = stepList.map(item =>
-        item.key === "guardianEmail" ? { ...item, required: true } : item
-      );
     }
 
     if (step.key === "guardianEmail" && ageFromDate(answers.dateOfBirth) < 16) {
@@ -1368,7 +1052,14 @@
       }
     }
 
-    if (stepIndex < stepList.length - 1) {
+    answers[step.key] = answer;
+    if (step.key === "position") coachCallRequested = answer === "Position chat requested";
+
+    if (step.key === "dateOfBirth" && ageFromDate(answer) < 16) {
+      steps.find(item => item.key === "guardianEmail").required = true;
+    }
+
+    if (stepIndex < steps.length - 1) {
       stepIndex++;
       renderStep();
       return;
@@ -1377,10 +1068,13 @@
     await finishSetup();
   });
 
+  $("leaveSetupButton").addEventListener("click", () => {
+    say("Your setup is saved on this device. Sign in again to continue.");
+    showOnly("welcomeScreen");
+  });
+
   async function finishSetup() {
-    if (!currentUser) {
-      return say("Sign in again to finish setting up your player profile.", true);
-    }
+    if (!currentUser) return say("Sign in again to finish setting up your player profile.", true);
 
     const age = ageFromDate(answers.dateOfBirth);
     const profile = {
@@ -1395,20 +1089,20 @@
       position: answers.position || "",
       positionCoachCallRequested: coachCallRequested,
       developmentFocus: answers.goals || [],
-      preferredFoot: answers.preferredFoot || "",
-      trainingFrequency: answers.trainingFrequency || "",
-      trainingDuration: answers.trainingDuration || "",
-      trainingSpace: answers.trainingSpace || { selected: [], notes: "" },
-      nutritionPreferences: answers.nutritionPreferences || [],
+      preferredFoot: answers.foot || "",
+      trainingFrequency: answers.frequency || "",
+      trainingDuration: answers.duration || "",
+      trainingSpace: answers.space || { selected: [], notes: "" },
+      nutritionPreferences: answers.nutrition || [],
       nutritionNotes: answers.nutritionNotes || "",
-      matchDayPreferences: answers.matchDayPreferences || [],
-      recoveryPreferences: answers.recoveryPreferences || [],
+      matchDayPreferences: answers.matchDay || [],
+      recoveryPreferences: answers.recovery || [],
       guardianEmail: age < 16 ? answers.guardianEmail : "",
       guardianApprovalStatus: age < 16 ? "pending" : "not_required"
     };
 
     try {
-      const { error: saveError } = await supabaseClient
+      const { error } = await supabaseClient
         .from("player_records")
         .upsert({
           player_id: currentUser.id,
@@ -1416,27 +1110,14 @@
           updated_at: new Date().toISOString()
         }, { onConflict: "player_id" });
 
-      if (saveError) throw saveError;
-
-      if (coachCallRequested) {
-        const { error: coachError } = await supabaseClient
-          .from("coach_requests")
-          .insert({
-            player_id: currentUser.id,
-            category: "position-exploration",
-            payload: { request: "Please arrange a call to help me explore positions." }
-          });
-
-        if (coachError) {
-          say("Your profile is saved, but the Coach call request did not send: " + coachError.message, true);
-        }
-      }
+      if (error) throw error;
 
       await supabaseClient.auth.updateUser({
         data: { onboarding_started: true, onboarding_complete: true }
       });
 
       localStorage.removeItem(`${draftKey}:${(currentUser.email || "").toLowerCase()}`);
+      window.playerProfile = profile;
       renderApp();
       showOnly("appScreen");
       show("signOutButton");
@@ -1448,18 +1129,18 @@
 
   async function enterApp(user) {
     currentUser = user;
-
     const draftText = localStorage.getItem(`${draftKey}:${(user.email || "").toLowerCase()}`);
-    const hasUnfinishedSetup =
+    const unfinished =
       user.user_metadata?.onboarding_started === true &&
       user.user_metadata?.onboarding_complete !== true;
 
-    if (hasUnfinishedSetup && draftText) {
+    if (unfinished && draftText) {
       try { answers = JSON.parse(draftText); } catch { answers = {}; }
       startPlayerQuestions();
       return;
     }
 
+    await loadSavedProfile();
     renderApp();
     showOnly("appScreen");
     show("signOutButton");
@@ -1470,18 +1151,6 @@
     const name = profile.name || currentUser?.user_metadata?.display_name || "Player";
     $("welcomeTitle").textContent = `Welcome, ${name}.`;
 
-    if (!profile.name && currentUser) {
-      loadSavedProfile().then(saved => {
-        if (!saved) return;
-        window.playerProfile = saved;
-        renderAppWithProfile(saved);
-      });
-    } else {
-      renderAppWithProfile(profile);
-    }
-  }
-
-  function renderAppWithProfile(profile) {
     const fields = [
       ["Email", currentUser?.email || ""],
       ["Country", profile.country || "Not added"],
@@ -1489,7 +1158,8 @@
       ["Position", profile.position || "Not added"],
       ["Development focus", Array.isArray(profile.developmentFocus) ? profile.developmentFocus.join(", ") : "Not added"],
       ["Training each week", profile.trainingFrequency || "Not added"],
-      ["Usual session length", profile.trainingDuration || "Not added"]
+      ["Usual session length", profile.trainingDuration || "Not added"],
+      ["Nationality", profile.nationality || "Not added"]
     ];
 
     $("playerSummary").innerHTML = fields.map(([label, value]) =>
@@ -1500,10 +1170,10 @@
       `<div class="list-item"><strong>${escapeHtml(label)}</strong><p>${escapeHtml(value)}</p></div>`
     ).join("");
 
-    const trainingSpace = profile.trainingSpace || {};
+    const space = profile.trainingSpace || {};
     const equipment = [
-      ...(trainingSpace.selected || []),
-      trainingSpace.notes || ""
+      ...(space.selected || []),
+      space.notes || ""
     ].filter(Boolean).join(" · ") || "Not added";
 
     $("trainingSummary").innerHTML = `
@@ -1528,9 +1198,8 @@
       return null;
     }
 
-    const profile = data?.data?.profile || null;
-    window.playerProfile = profile;
-    return profile;
+    window.playerProfile = data?.data?.profile || null;
+    return window.playerProfile;
   }
 
   document.querySelectorAll("[data-page]").forEach(button => {
