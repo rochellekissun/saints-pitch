@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SAINTS PITCH — Player setup</title>
+  <link rel="stylesheet" href="onboarding.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="onboarding.js" defer></script>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <a class="brand" href="index.html"><span>SAINTS</span> <b>PITCH</b></a>
+      <span id="step-count" class="step-count"></span>
+    </header>
+
+    <div id="message" role="status" aria-live="polite" hidden></div>
+
+    <section class="panel">
+      <div id="question"></div>
+      <footer>
+        <button id="back" class="button secondary" type="button">Back</button>
+        <button id="continue" class="button primary" type="button">Continue</button>
+      </footer>
+    </section>
+  </main>
+</body>
+</html>
