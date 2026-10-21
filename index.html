@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#09090b">
   <title>SAINTS PITCH</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     :root {
       color-scheme: dark;
@@ -15,379 +16,436 @@
       --line: #303038;
       --text: #f4f4f5;
       --muted: #aaaab4;
-      --purple: #8B5CF6;
-      --teal: #2DD4BF;
+      --purple: #8b5cf6;
+      --teal: #2dd4bf;
       --red: #fb7185;
       font: 15px/1.55 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
+
     * { box-sizing: border-box; }
-    body { margin: 0; background: var(--bg); color: var(--text); }
-    button, input, select, textarea { font: inherit; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    button, input, select, textarea {
+      font: inherit;
+    }
+
     button { cursor: pointer; }
+
     [hidden], .hidden { display: none !important; }
-    .wrap { max-width: 1440px; margin: auto; min-height: 100vh; padding: 22px; }
-    header { display:flex; justify-content:space-between; align-items:center; gap:14px; border-bottom:1px solid var(--line); padding-bottom:16px; margin-bottom:22px; }
-    .brand { font-size:23px; font-weight:900; letter-spacing:.09em; border:0; padding:0; background:transparent; cursor:pointer; }
-    .brand span { color:var(--purple); }
-    .brand b { color:var(--teal); }
-    .layout { display:grid; grid-template-columns:220px minmax(0,1fr); gap:24px; }
-    nav { display:grid; align-content:start; gap:7px; }
-    nav button, .btn { color:var(--text); background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:10px 13px; text-align:left; }
-    nav button.active { background:#211936; border-color:#59417d; }
-    .btn.primary { background:var(--purple); border-color:var(--purple); font-weight:750; }
-    .btn.teal { background:var(--teal); border-color:var(--teal); color:#062521; font-weight:750; }
-    .btn:hover, nav button:hover { filter:brightness(1.15); }
-    main { min-width:0; }
-    .page { display:none; }
-    .page.active { display:block; }
-    .card { background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:20px; margin-bottom:15px; }
-    h1,h2,h3,p { margin-top:0; }
-    h1 { font-size:clamp(27px,4vw,38px); line-height:1.15; margin-bottom:8px; }
-    h2 { font-size:23px; margin-bottom:8px; }
-    h3 { font-size:17px; margin-bottom:7px; }
-    .eyebrow { color:var(--teal); font-size:11px; font-weight:800; letter-spacing:.14em; margin-bottom:8px; }
-    .muted, small { color:var(--muted); }
-    .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
-    .field { display:grid; gap:6px; }
-    .field.full { grid-column:1/-1; }
-    .field label { color:#d1d1d8; font-size:13px; font-weight:650; }
-    input,select,textarea { width:100%; padding:11px 12px; border:1px solid var(--line); border-radius:9px; background:#0e0e11; color:var(--text); }
-    textarea { min-height:90px; resize:vertical; }
-    select[multiple] { min-height:190px; }
-    .actions { display:flex; gap:9px; flex-wrap:wrap; align-items:center; margin-top:15px; }
-    .tiles { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
-    .tile { cursor:pointer; transition:border-color .15s; }
-    .tile:hover { border-color:var(--purple); }
-    .tile h3 { margin-bottom:5px; }
-    .tile p { color:var(--muted); font-size:13px; margin:0; }
-    .result { border:1px solid #393145; background:#111014; border-radius:12px; padding:16px; margin-top:15px; }
-    .result li { margin:7px 0; }
-    .option { border-top:1px solid var(--line); padding-top:12px; margin-top:12px; }
-    .notice { border-left:3px solid var(--teal); background:#10201e; color:#c7d8d5; border-radius:8px; padding:12px 14px; font-size:13px; margin:14px 0; }
-    .notice.warning { border-color:#e0a84b; background:#241d11; color:#ead7ac; }
-    .notice.error { border-color:var(--red); background:#27151a; color:#ffd1d8; }
-    #message { border:1px solid #44345e; background:#211936; border-radius:10px; padding:12px 14px; margin-bottom:16px; }
-    #message.error { border-color:#71404a; background:#351820; color:#ffd1d8; }
-    .list-item { border-top:1px solid var(--line); padding:12px 0; }
-    .list-item:first-child { border-top:0; }
-    .list-item p { margin:5px 0 0; white-space:pre-wrap; overflow-wrap:anywhere; }
-    .topline { display:flex; justify-content:space-between; gap:12px; align-items:center; }
-    .pill { display:inline-block; border:1px solid #493968; background:#211936; color:#ded3ff; border-radius:30px; padding:3px 9px; font-size:11px; }
-    .small { font-size:12px; }
-    @media(max-width:780px) {
-      .wrap { padding:14px; }
-      .layout { grid-template-columns:1fr; }
-      nav { display:flex; overflow-x:auto; padding-bottom:5px; }
-      nav button { white-space:nowrap; }
-      .grid,.tiles { grid-template-columns:1fr; }
-      .field.full { grid-column:auto; }
-      header { align-items:flex-start; }
+
+    .wrap {
+      max-width: 1180px;
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: 22px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      padding-bottom: 16px;
+      margin-bottom: 22px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand {
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--text);
+      font-size: 23px;
+      font-weight: 900;
+      letter-spacing: .09em;
+    }
+
+    .brand span { color: var(--purple); }
+    .brand b { color: var(--teal); }
+
+    .card {
+      padding: 20px;
+      margin-bottom: 15px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--panel);
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { font-size: clamp(27px, 4vw, 38px); line-height: 1.15; }
+    h2 { font-size: 23px; }
+    h3 { font-size: 17px; }
+
+    .eyebrow {
+      margin-bottom: 8px;
+      color: var(--teal);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .muted, small { color: var(--muted); }
+    .small { font-size: 12px; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field.full { grid-column: 1 / -1; }
+
+    .field label {
+      color: #d1d1d8;
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: #0e0e11;
+      color: var(--text);
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .btn, nav button {
+      padding: 10px 13px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--panel2);
+      color: var(--text);
+      text-align: left;
+    }
+
+    .btn.primary {
+      border-color: var(--purple);
+      background: var(--purple);
+      font-weight: 750;
+    }
+
+    .btn:hover, nav button:hover { filter: brightness(1.15); }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 15px;
+    }
+
+    .tiles, .choice-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .tile {
+      min-height: 90px;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .tile h3 { margin-bottom: 5px; }
+    .tile p { margin-bottom: 0; color: var(--muted); font-size: 13px; }
+
+    .choice-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 58px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #19191f;
+      color: var(--text);
+      font-weight: 600;
+      line-height: 1.35;
+    }
+
+    .choice-card input {
+      flex: 0 0 18px;
+      width: 18px;
+      height: 18px;
+      margin: 0;
+      accent-color: var(--purple);
+    }
+
+    .choice-group { margin-top: 18px; }
+
+    .choice-group h3 {
+      padding-bottom: 7px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .inline-link {
+      padding: 0;
+      border: 0;
+      background: none;
+      color: var(--teal);
+      font-weight: 650;
+      text-decoration: underline;
+    }
+
+    .result {
+      padding: 16px;
+      margin-top: 15px;
+      border: 1px solid #393145;
+      border-radius: 12px;
+      background: #111014;
+    }
+
+    .option {
+      padding-top: 12px;
+      margin-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+
+    .notice, #message {
+      padding: 12px 14px;
+      margin: 14px 0;
+      border: 1px solid #44345e;
+      border-radius: 10px;
+      background: #211936;
+    }
+
+    .notice {
+      border-left: 3px solid var(--teal);
+      background: #10201e;
+      color: #c7d8d5;
+      font-size: 13px;
+    }
+
+    #message.error {
+      border-color: #71404a;
+      background: #351820;
+      color: #ffd1d8;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 210px minmax(0, 1fr);
+      gap: 24px;
+    }
+
+    nav {
+      display: grid;
+      align-content: start;
+      gap: 7px;
+    }
+
+    nav button.active {
+      border-color: #59417d;
+      background: #211936;
+    }
+
+    main { min-width: 0; }
+    .page { display: none; }
+    .page.active { display: block; }
+
+    .topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 3px 9px;
+      border: 1px solid #493968;
+      border-radius: 30px;
+      background: #211936;
+      color: #ded3ff;
+      font-size: 11px;
+    }
+
+    .list-item {
+      padding: 12px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .list-item p {
+      margin: 5px 0 0;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    @media (max-width: 760px) {
+      .wrap { padding: 14px; }
+      .layout { grid-template-columns: 1fr; }
+      nav {
+        display: flex;
+        overflow-x: auto;
+        padding-bottom: 5px;
+      }
+      nav button { white-space: nowrap; }
+      .grid, .tiles, .choice-grid { grid-template-columns: 1fr; }
+      .field.full { grid-column: auto; }
+      header { align-items: flex-start; }
     }
   </style>
 </head>
+
 <body>
 <div class="wrap">
   <header>
-    <button id="brandHome" class="brand" aria-label="SAINTS PITCH home"><span>SAINTS</span> <b>PITCH</b></button>
+    <button id="brandHome" class="brand" aria-label="SAINTS PITCH home">
+      <span>SAINTS</span> <b>PITCH</b>
+    </button>
     <div class="actions" style="margin:0">
-      <button id="openAccount" class="btn">Account / sign in</button>
-      <button id="signOut" class="btn hidden">Sign out</button>
+      <button id="accountButton" class="btn">Account / sign in</button>
+      <button id="signOutButton" class="btn hidden">Sign out</button>
     </div>
   </header>
 
   <div id="message" class="hidden" role="status" aria-live="polite"></div>
 
-  <section id="entryScreen">
+  <section id="welcomeScreen">
     <div class="card">
       <p class="eyebrow">WELCOME TO SAINTS PITCH</p>
       <h1>Your football journey starts here.</h1>
       <p class="muted">Choose the option that fits you.</p>
       <div class="tiles">
-        <button id="returningPlayer" class="card tile"><h3>Returning player</h3><p>I already have an account. Take me to sign in.</p></button>
-        <button id="newPlayer" class="card tile"><h3>New player</h3><p>I’m new here. Help me set up my account.</p></button>
+        <button id="returningButton" class="card tile">
+          <h3>Returning player</h3>
+          <p>I already have an account. Take me to sign in.</p>
+        </button>
+        <button id="newPlayerButton" class="card tile">
+          <h3>New player</h3>
+          <p>I’m new here. Help me set up my account.</p>
+        </button>
       </div>
     </div>
   </section>
 
-  <section id="onboardingScreen" class="hidden">
+  <section id="connectScreen" class="hidden">
     <div class="card">
-      <p class="eyebrow">NEW PLAYER SETUP</p>
-      <div class="topline"><span id="onboardingCount" class="pill"></span><button id="onboardingExit" class="btn">Save and leave</button></div>
-      <div class="result"><div id="onboardingQuestion"></div></div>
-      <div class="actions">
-        <button id="onboardingBack" class="btn">Back</button>
-        <button id="onboardingNext" class="btn primary">Continue</button>
-      </div>
-      <p class="small muted">Your answers are saved to your private player record. You can update your profile later.</p>
-    </div>
-  </section>
-
-  <section id="accountScreen" class="hidden">
-    <div class="card" id="connectionCard">
-      <p class="eyebrow">ACCOUNT CONNECTION</p>
-      <h1>Sign in or create your account</h1>
-      <p class="muted">Connect your Supabase project here. This setup form is for the owner of this trial, not for athletes to fill in.</p>
+      <p class="eyebrow">OWNER SETUP</p>
+      <h1>Connect SAINTS PITCH</h1>
+      <p class="muted">Use your Supabase project URL and public anon or publishable key.</p>
       <div class="grid">
         <div class="field full">
           <label for="projectUrl">Supabase Project URL</label>
           <input id="projectUrl" type="url" placeholder="https://your-project.supabase.co">
         </div>
         <div class="field full">
-          <label for="publicKey">Supabase public anon / publishable key</label>
-          <input id="publicKey" type="password" autocomplete="off" placeholder="Public anon / publishable key">
+          <label for="publicKey">Supabase public key</label>
+          <input id="publicKey" type="password" autocomplete="off" placeholder="Paste the public anon / publishable key">
         </div>
       </div>
       <div class="actions">
-        <button id="connect" class="btn">Connect account service</button>
-        <button id="backToApp" class="btn">Back to SAINTS PITCH</button>
+        <button id="connectButton" class="btn primary">Connect</button>
+        <button id="connectBackButton" class="btn">Back</button>
       </div>
-      <p class="small muted">Never enter a service-role key here. The public key is intended for browser use; database privacy depends on the SQL policies below.</p>
-    </div>
-
-    <div id="signedInBox" class="card hidden">
-      <p class="eyebrow">YOUR ACCOUNT</p>
-      <h1 id="accountHeading">Your player profile</h1>
-      <p class="muted">Signed in as <strong id="accountEmail"></strong></p>
-      <div id="accountProfileSummary" class="result"></div>
-      <div class="actions"><button id="editProfile" class="btn primary">Edit player profile</button><button id="accountBack" class="btn">Back to SAINTS PITCH</button></div>
-    </div>
-    <div id="authBox" class="card hidden">
-      <h2>Your account</h2>
-      <div class="grid">
-        <div id="signupNameField" class="field full hidden"><label for="signupName">Your name</label><input id="signupName" type="text" maxlength="60" autocomplete="name"></div>
-        <div class="field full"><label for="email">Email</label><input id="email" type="email" autocomplete="email"></div>
-        <div class="field full"><label for="password">Password</label><input id="password" type="password" minlength="8" autocomplete="current-password"></div>
-      </div>
-      <p id="authModeLabel"><strong>Sign in</strong></p>
-      <div class="actions">
-        <button id="submitAuth" class="btn primary">Sign in</button>
-        <button id="toggleAuthMode" class="btn">Need an account? Sign up</button>
-        <button id="resetPassword" class="btn">Forgot password?</button>
-      </div>
-      <div id="passwordPanel" class="result hidden">
-        <h3>Choose a new password</h3>
-        <div class="field"><label for="newPassword">New password (at least 8 characters)</label><input id="newPassword" type="password" minlength="8" autocomplete="new-password"></div>
-        <button id="saveNewPassword" class="btn primary" style="margin-top:10px">Save new password</button>
-      </div>
-      <p class="small muted">If email confirmation is enabled, check your inbox before signing in.</p>
+      <p class="small muted">Never put a service-role key in this page.</p>
     </div>
   </section>
 
-  <div id="app" class="layout hidden">
-    <nav id="nav" aria-label="Main navigation">
-      <button class="active" data-page="home">Start here</button>
+  <section id="accountScreen" class="hidden">
+    <div class="card">
+      <p class="eyebrow">PLAYER ACCOUNT</p>
+      <h1 id="accountTitle">Sign in</h1>
+      <div class="grid">
+        <div id="accountNameField" class="field full hidden">
+          <label for="accountName">Name</label>
+          <input id="accountName" type="text" maxlength="80" autocomplete="name">
+        </div>
+        <div class="field full">
+          <label for="accountEmail">Email</label>
+          <input id="accountEmail" type="email" autocomplete="email">
+        </div>
+        <div class="field full">
+          <label for="accountPassword">Password</label>
+          <input id="accountPassword" type="password" minlength="8" autocomplete="current-password">
+        </div>
+      </div>
+      <div class="actions">
+        <button id="accountSubmit" class="btn primary">Sign in</button>
+        <button id="googleButton" class="btn">Continue with Google</button>
+        <button id="forgotButton" class="btn">Forgot password?</button>
+      </div>
+      <p id="accountSwitch" class="small muted"></p>
+      <button id="accountSwitchButton" class="inline-link" type="button"></button>
+      <div id="resetPasswordPanel" class="result hidden">
+        <h3>Choose a new password</h3>
+        <div class="field">
+          <label for="newPassword">New password</label>
+          <input id="newPassword" type="password" minlength="8" autocomplete="new-password">
+        </div>
+        <button id="savePasswordButton" class="btn primary" style="margin-top:10px">Save password</button>
+      </div>
+      <p class="small muted">If email verification is enabled, check your inbox before signing in.</p>
+    </div>
+    <button id="accountBackButton" class="btn">Back</button>
+  </section>
+
+  <section id="onboardingScreen" class="hidden">
+    <div class="card">
+      <p class="eyebrow">NEW PLAYER SETUP</p>
+      <div class="topline">
+        <span id="stepCount" class="pill"></span>
+        <button id="leaveSetupButton" class="btn">Save and leave</button>
+      </div>
+      <div class="result">
+        <div id="question"></div>
+      </div>
+      <div class="actions">
+        <button id="stepBackButton" class="btn">Back</button>
+        <button id="stepNextButton" class="btn primary">Continue</button>
+      </div>
+      <p class="small muted">You can update your player profile later.</p>
+    </div>
+  </section>
+
+  <div id="appScreen" class="layout hidden">
+    <nav id="mainNav" aria-label="Main navigation">
+      <button class="active" data-page="home">Dashboard</button>
       <button data-page="training">Training</button>
-      <button data-page="positions">Find a position</button>
-      <button data-page="nutrition">Nutrition</button>
-      <button data-page="recovery">Recovery</button>
-      <button data-page="progress">Progress</button>
       <button data-page="profile">Player profile</button>
-      <button data-page="parent">Parent / guardian</button>
-      <button data-page="coach" id="coachNav" class="hidden">Coach inbox</button>
     </nav>
 
     <main>
-      <section class="page active" id="home">
+      <section id="homePage" class="page active">
         <div class="card">
-          <p class="eyebrow">START WHERE YOU ARE</p>
-          <h1 id="welcome">Your next step in football.</h1>
-          <p class="muted">New to football, returning after time away, playing socially, working toward trials, or already at a high level? Choose what fits today. You can change it anytime.</p>
-          <p id="weeklyNote" class="muted">No pressure to have a plan yet. Choose one small next step.</p>
-        </div>
-        <div class="tiles">
-          <article class="card tile" data-open="profile"><h3>I’m new or coming back</h3><p>Start with the basics, at your own pace.</p></article>
-          <article class="card tile" data-open="training"><h3>Help me train</h3><p>Choose several areas or ask Coach for help.</p></article>
-          <article class="card tile" data-open="positions"><h3>Help me find my position</h3><p>You don’t need to know yet.</p></article>
-          <article class="card tile" data-open="nutrition"><h3>Help with food ideas</h3><p>Set preferences or write to Coach.</p></article>
-          <article class="card tile" data-open="recovery"><h3>I need recovery support</h3><p>Choose a check-in or request a follow-up.</p></article>
-          <article class="card tile" data-open="progress"><h3>Log something</h3><p>Save a session, match, question, or small win.</p></article>
-        </div>
-        <p class="small muted">You can explore the tools without signing in. Sign in to save private records or send something to Coach.</p>
-      </section>
-
-      <section class="page" id="training">
-        <div class="card">
-          <p class="eyebrow">BUILD A SESSION THAT FITS</p>
-          <h2>Training options</h2>
-          <p class="muted">Choose any areas. If you are new or coming back, the ideas start gently.</p>
-          <div class="grid">
-            <div class="field">
-              <label for="stage">Where are you right now?</label>
-              <select id="stage">
-                <option>New to football</option><option>Returning after a break</option>
-                <option>Playing socially</option><option>Playing regularly</option>
-                <option>Preparing for a trial</option><option>High level / professional</option>
-                <option>Not sure — help me start</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="trainPosition">Position or role</label>
-              <select id="trainPosition">
-                <option>Not sure yet</option><option>Goalkeeper</option><option>Defender</option>
-                <option>Midfielder</option><option>Forward</option><option>Wide player</option>
-                <option>Multiple positions</option><option>Other — ask Coach</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="focus">Choose one or more areas</label>
-              <select id="focus" multiple>
-                <option>Ball control</option><option>Passing and first touch</option>
-                <option>Dribbling and 1v1</option><option>Shooting and finishing</option>
-                <option>Defending</option><option>Goalkeeping</option>
-                <option>Speed and agility</option><option>Strength and movement</option>
-                <option>Match awareness</option><option>Confidence and decisions</option>
-                <option>Returning to fitness</option><option>Recovery / light day</option>
-                <option>Other — ask Coach</option>
-              </select>
-              <small>On a computer, hold Ctrl (Windows) or Command (Mac) to select multiple areas.</small>
-            </div>
-            <div class="field">
-              <label for="time">Time available</label>
-              <select id="time"><option>15 minutes</option><option>25 minutes</option><option>35 minutes</option><option>50 minutes</option></select>
-              <label for="equipment">Space or equipment</label>
-              <select id="equipment">
-                <option>Small space, no equipment</option><option>Ball only</option>
-                <option>Ball and cones</option><option>Wall or rebounder</option>
-                <option>Club or pitch access</option><option>Other</option>
-              </select>
-            </div>
-            <div class="field full">
-              <label for="trainNotes">What should Coach know? (optional)</label>
-              <textarea id="trainNotes" placeholder="Your goals, available space, questions, or what you want adjusted."></textarea>
-            </div>
-          </div>
-          <div class="actions"><button id="makeTraining" class="btn primary">Give me options</button><button id="sendTraining" class="btn">Send my notes to Coach</button></div>
-          <div id="trainingResult"></div>
-          <div class="notice">Stop if you feel pain or unusual symptoms. This is not injury rehabilitation or medical advice.</div>
+          <p class="eyebrow">YOUR PLAYER DASHBOARD</p>
+          <h1 id="welcomeTitle">Welcome to SAINTS PITCH.</h1>
+          <p id="welcomeText" class="muted">Your profile and next steps will appear here.</p>
+          <div class="result" id="playerSummary"></div>
         </div>
       </section>
 
-      <section class="page" id="positions">
+      <section id="trainingPage" class="page">
         <div class="card">
-          <p class="eyebrow">EXPLORE — YOU DON’T HAVE TO KNOW YET</p>
-          <h2>Find a position to try</h2>
-          <div class="grid">
-            <div class="field">
-              <label for="positionLike">What sounds fun?</label>
-              <select id="positionLike">
-                <option>Not sure — show me a range</option><option>Organising and using my hands</option>
-                <option>Defending and reading danger</option><option>Passing and linking play</option>
-                <option>Creating chances</option><option>Scoring goals</option>
-                <option>Running into space</option><option>A bit of everything</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="positionNotes">What do you enjoy, or want Coach to know?</label>
-              <textarea id="positionNotes" placeholder="Write in your own words."></textarea>
-            </div>
-          </div>
-          <div class="actions"><button id="findPosition" class="btn primary">Show me options</button><button id="sendPosition" class="btn">Send a question to Coach</button></div>
-          <div id="positionResult"></div>
-          <p class="muted">These are ideas to explore, not a verdict. You can try different roles.</p>
+          <p class="eyebrow">TRAINING</p>
+          <h2>Your training starting point</h2>
+          <div id="trainingSummary"></div>
+          <p class="muted">These are starting options to discuss with your coach. Adjust them to suit your experience, space, and equipment.</p>
         </div>
       </section>
 
-      <section class="page" id="nutrition">
+      <section id="profilePage" class="page">
         <div class="card">
-          <p class="eyebrow">FOOD SUPPORT THAT STARTS BY LISTENING</p>
-          <h2>Nutrition and meal ideas</h2>
-          <div class="grid">
-            <div class="field"><label for="mealKind">What do you need?</label><select id="mealKind">
-              <option>Quick breakfast</option><option>Lunch for school or work</option><option>Dinner</option>
-              <option>Snack before training</option><option>Food after training</option><option>Budget ideas</option>
-              <option>Help plan my week</option><option>Something else</option>
-            </select></div>
-            <div class="field"><label for="foodStyle">Food preference</label><select id="foodStyle">
-              <option>No preference</option><option>Vegetarian</option><option>Vegan</option>
-              <option>Halal requirements</option><option>Kosher requirements</option>
-              <option>Gluten-free preference</option><option>Dairy-free preference</option><option>Another preference</option>
-            </select></div>
-            <div class="field"><label for="avoid">Allergies or foods to avoid</label><input id="avoid" placeholder="List anything you need to avoid"></div>
-            <div class="field"><label for="budget">Budget</label><select id="budget"><option>Budget friendly</option><option>Flexible</option><option>I need to explain my budget</option></select></div>
-            <div class="field full"><label for="foodNotes">Culture, religion, preferences, access, or anything else</label><textarea id="foodNotes" placeholder="Write what matters to you. You can ask Coach to work through this with you."></textarea></div>
-          </div>
-          <div class="actions"><button id="makeMeals" class="btn primary">Show me several ideas</button><button id="sendNutrition" class="btn">Send my answers to Coach</button></div>
-          <div id="mealResult"></div>
-          <div class="notice warning">Ideas cannot guarantee allergy safety and are not medical nutrition advice. Check every label and cross-contact risk. For allergies or medical needs, involve a parent or guardian and a qualified clinician or dietitian.</div>
-        </div>
-      </section>
-
-      <section class="page" id="recovery">
-        <div class="card">
-          <p class="eyebrow">REST IS PART OF DEVELOPMENT</p><h2>Recovery check-in</h2>
-          <div class="grid">
-            <div class="field"><label for="recoveryNeed">What would help?</label><select id="recoveryNeed">
-              <option>Help me wind down</option><option>Rest day ideas</option><option>Light recovery after training</option>
-              <option>Sleep routine ideas</option><option>Hydration and regular meals</option>
-              <option>I’m feeling sore or tired</option><option>I want to talk to Coach</option><option>Other</option>
-            </select></div>
-            <div class="field"><label for="energy">Energy today</label><select id="energy"><option>High</option><option>Steady</option><option>Low</option><option>Not sure</option></select></div>
-            <div class="field full"><label for="recoveryNotes">Anything you want Coach to know?</label><textarea id="recoveryNotes" placeholder="Write it down. Don’t use this for urgent or medical help."></textarea></div>
-          </div>
-          <div class="actions"><button id="saveRecovery" class="btn primary">Save check-in</button><button id="sendRecovery" class="btn">Send check-in to Coach</button></div>
-          <div id="recoveryList"></div>
-          <div class="notice">If you have pain, an injury, or feel unwell, tell a trusted adult and contact a qualified clinician.</div>
-        </div>
-      </section>
-
-      <section class="page" id="progress">
-        <div class="card">
-          <p class="eyebrow">NOTICE THE SMALL WINS</p><h2>Progress log</h2>
-          <div class="grid">
-            <div class="field"><label for="logType">What do you want to log?</label><select id="logType">
-              <option>Training</option><option>Match or trial</option><option>Recovery</option>
-              <option>Confidence</option><option>Small win</option><option>Question for Coach</option>
-            </select></div>
-            <div class="field"><label for="logText">Your note</label><textarea id="logText" placeholder="What happened? What went well? What do you want help with?"></textarea></div>
-          </div>
-          <div class="actions"><button id="saveProgress" class="btn primary">Save entry</button><button id="sendProgress" class="btn">Send this to Coach</button></div>
-          <div id="progressList"></div>
-        </div>
-      </section>
-
-      <section class="page" id="profile">
-        <div class="card">
-          <p class="eyebrow">YOUR FOOTBALL JOURNEY</p><h2>Player profile</h2>
-          <p class="muted">You don’t need to know your level or position yet. Choose “not sure” and ask Coach to help.</p>
-          <div class="grid">
-            <div class="field"><label for="playerName">Name or nickname</label><input id="playerName" maxlength="60"></div>
-            <div class="field"><label for="country">Country</label><select id="country">
-              <option>Australia</option><option>England</option><option>Scotland</option><option>Wales</option>
-              <option>Ireland</option><option>United States</option><option>Canada</option><option>New Zealand</option>
-              <option>Brazil</option><option>France</option><option>Germany</option><option>Japan</option><option>Other</option>
-            </select></div>
-            <div class="field"><label for="journey">Where are you right now?</label><select id="journey">
-              <option>New to football</option><option>Coming back after a break</option><option>Social / community</option>
-              <option>Club player</option><option>Working toward trials</option><option>High level / academy</option>
-              <option>Professional</option><option>Not sure — help me work it out</option>
-            </select></div>
-            <div class="field"><label for="level">Competition or pathway</label><select id="level"></select></div>
-            <div class="field"><label for="profilePosition">Position</label><select id="profilePosition">
-              <option>Not sure yet</option><option>Goalkeeper</option><option>Defender</option>
-              <option>Midfielder</option><option>Forward</option><option>Wide player</option>
-              <option>Multiple positions</option><option>Other</option>
-            </select></div>
-            <div class="field"><label for="profileGoal">What are you working toward?</label><textarea id="profileGoal" maxlength="1000"></textarea></div>
-          </div>
-          <div class="actions"><button id="saveProfile" class="btn primary">Save profile</button><button id="sendProfile" class="btn">Ask Coach to help set this up</button></div>
-        </div>
-      </section>
-
-      <section class="page" id="parent">
-        <div class="card">
-          <p class="eyebrow">PLAYER AND GUARDIAN SUPPORT</p><h2>Parent / guardian</h2>
-          <p>Guardian accounts are not linked in this version. This button sends a setup request to Coach; it does not grant anyone account access.</p>
-          <div class="notice warning">Do not enter a child’s personal details here until secure guardian linking is configured.</div>
-          <button id="sendGuardian" class="btn primary">Ask Coach about guardian access</button>
-        </div>
-      </section>
-
-      <section class="page" id="coach">
-        <div class="card">
-          <p class="eyebrow">COACH VIEW</p><h2>Coach inbox</h2>
-          <p class="muted">This page appears only when the signed-in account has the Coach role configured by the project owner.</p>
-          <button id="refreshCoach" class="btn">Refresh inbox</button>
-          <div id="coachList"></div>
+          <p class="eyebrow">YOUR PROFILE</p>
+          <h2>Player profile</h2>
+          <div id="profileDetails"></div>
         </div>
       </section>
     </main>
@@ -399,810 +457,1110 @@
   "use strict";
 
   const $ = id => document.getElementById(id);
-  const pages = [...document.querySelectorAll(".page")];
-  let client = null;
-  let user = null;
-  let records = { profile: {}, progress: [], recovery: [] };
-  let recoveryEventSubscription = null;
-  let onboardingStep = 0;
-  let onboardingDraft = {};
-  let onboardingSteps = [];
-  let preSignup = false;
-  let minorBlocked = false;
+  const hide = id => $(id).classList.add("hidden");
+  const show = id => $(id).classList.remove("hidden");
 
-  const esc = value => String(value ?? "").replace(/[&<>"']/g, char => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-  }[char]));
+  let supabaseClient = null;
+  let currentUser = null;
+  let mode = "login";
+  let stepIndex = 0;
+  let stepList = [];
+  let answers = {};
+  let currentStepIsSignup = false;
+  let coachCallRequested = false;
 
-  function message(text, error = false) {
+  const storageUrl = "saintsPitch.supabaseUrl";
+  const storageKey = "saintsPitch.publicKey";
+  const draftKey = "saintsPitch.onboardingDraft";
+
+  const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, character => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  }[character]));
+
+  function say(text, isError = false) {
     const box = $("message");
     box.textContent = text;
     box.classList.remove("hidden", "error");
-    if (error) box.classList.add("error");
+    if (isError) box.classList.add("error");
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  function go(id) {
-    pages.forEach(page => page.classList.toggle("active", page.id === id));
-    document.querySelectorAll("[data-page]").forEach(button => {
-      button.classList.toggle("active", button.dataset.page === id);
-    });
-    if (id === "coach") loadCoachInbox();
+  function showOnly(screenId) {
+    [
+      "welcomeScreen",
+      "connectScreen",
+      "accountScreen",
+      "onboardingScreen",
+      "appScreen"
+    ].forEach(id => hide(id));
+    show(screenId);
   }
 
-  document.querySelectorAll("[data-page]").forEach(button => {
-    button.addEventListener("click", () => go(button.dataset.page));
-  });
-  document.querySelectorAll("[data-open]").forEach(card => {
-    card.addEventListener("click", () => go(card.dataset.open));
-  });
+  function connectSupabase(url, key) {
+    if (!window.supabase?.createClient) {
+      throw new Error("Supabase did not load. Check your connection and reload.");
+    }
+    if (!/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(url)) {
+      throw new Error("Enter your Supabase Project URL.");
+    }
+    if (!key) throw new Error("Paste your Supabase public key.");
 
-  const pathways = {
-    Australia: ["Grassroots / school football", "Community club", "Association / regional competition", "State or territory league", "NPL", "A-League Women / A-League Men", "Academy / development squad", "Professional", "Not sure — ask Coach"],
-    England: ["Grassroots / school", "Local community league", "County / regional league", "National League System", "Academy football", "Women’s football pathway", "EFL / Premier League", "Professional", "Not sure — ask Coach"],
-    Scotland: ["Grassroots / school", "Community club", "Regional / amateur football", "Academy football", "Women’s football pathway", "SPFL", "Professional", "Not sure — ask Coach"],
-    Wales: ["Grassroots / school", "Community club", "Regional league", "Academy football", "Cymru Premier", "Women’s football pathway", "Professional", "Not sure — ask Coach"],
-    Ireland: ["Grassroots / school", "Community club", "Regional league", "Academy football", "League of Ireland", "Women’s football pathway", "Professional", "Not sure — ask Coach"],
-    "United States": ["Recreational / community", "Club soccer", "High school", "College pathway", "Academy / elite youth", "NWSL / MLS", "Professional", "Not sure — ask Coach"],
-    Canada: ["Grassroots / community", "Club / regional", "Provincial pathway", "Academy / development", "League1 Canada", "CPL / NSL", "Professional", "Not sure — ask Coach"],
-    "New Zealand": ["Grassroots / school", "Community club", "Regional competition", "National League", "Academy / development", "Professional", "Not sure — ask Coach"]
-  };
+    supabaseClient = window.supabase.createClient(url, key);
+    localStorage.setItem(storageUrl, url);
+    localStorage.setItem(storageKey, key);
 
-  function updatePathways() {
-    const country = $("country").value;
-    const options = pathways[country] || [
-      "Grassroots / community", "Local club", "Regional / state pathway",
-      "Academy / development", "National competition", "Professional", "Not sure — ask Coach"
-    ];
-    $("level").innerHTML = options.map(value => `<option>${esc(value)}</option>`).join("");
-  }
-  $("country").addEventListener("change", updatePathways);
-  updatePathways();
-
-  const storedUrl = localStorage.getItem("saintsPitch.supabaseUrl");
-  const storedKey = localStorage.getItem("saintsPitch.publicKey");
-
-  function connect(url, key) {
-    if (!window.supabase?.createClient) throw new Error("The account service did not load. Check your internet connection and reload.");
-    if (!url || !/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(url)) throw new Error("Enter a valid Supabase Project URL.");
-    if (!key) throw new Error("Enter the public anon / publishable key.");
-    client = window.supabase.createClient(url, key);
-    localStorage.setItem("saintsPitch.supabaseUrl", url);
-    localStorage.setItem("saintsPitch.publicKey", key);
-    $("authBox").classList.remove("hidden");
-
-    if (recoveryEventSubscription) recoveryEventSubscription.unsubscribe();
-    const listener = client.auth.onAuthStateChange((event, session) => {
+    supabaseClient.auth.onAuthStateChange((event, session) => {
       if (event === "PASSWORD_RECOVERY") {
-        $("accountScreen").classList.remove("hidden");
-        $("app").classList.add("hidden");
-        $("passwordPanel").classList.remove("hidden");
-        if (session?.user) user = session.user;
-      } else if (session?.user && !user) {
-        enterApp(session.user);
-      } else if (event === "SIGNED_OUT") {
-        user = null;
-        $("signOut").classList.add("hidden");
+        currentUser = session?.user || null;
+        showOnly("accountScreen");
+        show("resetPasswordPanel");
+      }
+      if (event === "SIGNED_OUT") {
+        currentUser = null;
+        showOnly("welcomeScreen");
       }
     });
-    recoveryEventSubscription = listener.data.subscription;
 
-    client.auth.getSession().then(({ data, error }) => {
-      if (error) return message(error.message, true);
+    supabaseClient.auth.getSession().then(({ data, error }) => {
+      if (error) return say(error.message, true);
       if (data.session?.user) enterApp(data.session.user);
     });
   }
 
-  if (storedUrl && storedKey) {
-    $("projectUrl").value = storedUrl;
-    $("publicKey").value = storedKey;
-    try { connect(storedUrl, storedKey); }
-    catch (error) { message(error.message, true); }
+  const savedUrl = localStorage.getItem(storageUrl);
+  const savedKey = localStorage.getItem(storageKey);
+
+  if (savedUrl && savedKey) {
+    $("projectUrl").value = savedUrl;
+    $("publicKey").value = savedKey;
+    try {
+      connectSupabase(savedUrl, savedKey);
+    } catch (error) {
+      say(error.message, true);
+    }
   }
 
-  $("connect").addEventListener("click", () => {
+  $("connectButton").addEventListener("click", () => {
     try {
-      connect($("projectUrl").value.trim().replace(/\/$/, ""), $("publicKey").value.trim());
-      message("Account service connected. Create an account or sign in.");
+      connectSupabase(
+        $("projectUrl").value.trim().replace(/\/$/, ""),
+        $("publicKey").value.trim()
+      );
+      say("SAINTS PITCH is connected.");
+      showOnly("welcomeScreen");
     } catch (error) {
-      message(error.message, true);
+      say(error.message, true);
     }
   });
 
-  $("returningPlayer").addEventListener("click", () => {
-    $("entryScreen").classList.add("hidden");
-    $("accountScreen").classList.remove("hidden");
-    $("connectionCard").classList.toggle("hidden", !!client);
-    $("authBox").classList.toggle("hidden", !client);
-    $("signedInBox").classList.add("hidden");
-    setAuthMode("login");
+  $("connectBackButton").addEventListener("click", () => showOnly("welcomeScreen"));
+  $("accountBackButton").addEventListener("click", () => showOnly("welcomeScreen"));
+
+  $("accountButton").addEventListener("click", () => {
+    if (currentUser) {
+      showOnly("appScreen");
+      show("signOutButton");
+      renderApp();
+    } else if (supabaseClient) {
+      mode = "login";
+      renderAccountMode();
+      showOnly("accountScreen");
+    } else {
+      showOnly("connectScreen");
+    }
   });
 
-  $("newPlayer").addEventListener("click", beginNewPlayer);
-
-  function beginNewPlayer() {
-    $("entryScreen").classList.add("hidden");
-    $("signedInBox").classList.add("hidden");
-    if (!client) {
-      $("accountScreen").classList.remove("hidden");
-      $("connectionCard").classList.remove("hidden");
-      $("authBox").classList.add("hidden");
-      message("Connect the account service to continue. Then return here and choose New player.");
+  $("returningButton").addEventListener("click", () => {
+    if (!supabaseClient) {
+      showOnly("connectScreen");
       return;
     }
-    preSignup = true;
-    onboardingStep = 0;
-    onboardingDraft = {};
-    onboardingSteps = [
-      { key: "display_name", title: "What should we call you?", help: "Use your name or a nickname.", type: "text", required: true },
-      { key: "email", title: "What is your email address?", help: "We’ll send the account verification link here.", type: "email", required: true },
-      { key: "password", title: "Create a password", help: "Use at least 8 characters.", type: "password", required: true }
-    ];
-    showOnboarding();
-  }
-
-  $("brandHome").addEventListener("click", () => {
-    if (user) {
-      if (minorBlocked || (user.user_metadata?.onboarding_started && !user.user_metadata?.onboarding_complete)) {
-        if (!minorBlocked) showOnboarding();
-        else message("Guardian setup is required before this player profile can continue.", true);
-        return;
-      }
-      $("entryScreen").classList.add("hidden");
-      $("accountScreen").classList.add("hidden");
-      $("onboardingScreen").classList.add("hidden");
-      $("app").classList.remove("hidden");
-      go("home");
-    } else {
-      $("accountScreen").classList.add("hidden");
-      $("onboardingScreen").classList.add("hidden");
-      $("app").classList.add("hidden");
-      $("entryScreen").classList.remove("hidden");
-    }
+    mode = "login";
+    renderAccountMode();
+    showOnly("accountScreen");
   });
 
-  $("openAccount").addEventListener("click", () => {
-    $("app").classList.add("hidden");
-    $("accountScreen").classList.remove("hidden");
-    if (user) {
-      $("connectionCard").classList.add("hidden");
-      $("authBox").classList.add("hidden");
-      $("signedInBox").classList.remove("hidden");
-      renderAccount();
-    } else {
-      $("connectionCard").classList.toggle("hidden", !!client);
-      $("signedInBox").classList.add("hidden");
-      if (client) $("authBox").classList.remove("hidden");
+  $("newPlayerButton").addEventListener("click", () => {
+    if (!supabaseClient) {
+      showOnly("connectScreen");
+      return;
     }
+    mode = "signup";
+    renderAccountMode();
+    showOnly("accountScreen");
   });
-  function closeAccount() {
-    $("accountScreen").classList.add("hidden");
-    $("app").classList.remove("hidden");
-  }
-  $("backToApp").addEventListener("click", closeAccount);
-  $("accountBack").addEventListener("click", closeAccount);
-  $("editProfile").addEventListener("click", () => { closeAccount(); go("profile"); });
-  function renderAccount() {
-    if (!user) return;
-    $("accountEmail").textContent = user.email || "Email unavailable";
-    const profile = records.profile || {};
-    $("accountHeading").textContent = profile.name ? `${profile.name}’s player profile` : "Your player profile";
-    $("accountProfileSummary").innerHTML = profile.name
-      ? `<p><strong>Name:</strong> ${esc(profile.name)}</p><p><strong>Country:</strong> ${esc(profile.country || "Not added")}</p><p><strong>Journey:</strong> ${esc(profile.journey || "Not added")}</p><p><strong>Competition:</strong> ${esc(profile.level || "Not added")}</p><p><strong>Position:</strong> ${esc(profile.position || "Not sure yet")}</p><p><strong>Goal:</strong> ${esc(profile.goal || "Not added")}</p>`
-      : '<p>You are signed in. Add your player details in Player profile to see them here.</p>';
-  }
 
-  let authMode = "login";
-  function setAuthMode(mode) {
-    authMode = mode;
+  function renderAccountMode() {
     const signingUp = mode === "signup";
-    $("authModeLabel").innerHTML = signingUp ? "<strong>Create your account</strong>" : "<strong>Sign in</strong>";
-    $("submitAuth").textContent = signingUp ? "Create account" : "Sign in";
-    $("toggleAuthMode").textContent = signingUp ? "Already have an account? Sign in" : "Need an account? Sign up";
-    $("password").autocomplete = signingUp ? "new-password" : "current-password";
-    $("signupNameField").classList.toggle("hidden", !signingUp);
+    $("accountTitle").textContent = signingUp ? "Create your player account" : "Returning player sign in";
+    $("accountSubmit").textContent = signingUp ? "Create account" : "Sign in";
+    $("accountNameField").classList.toggle("hidden", !signingUp);
+    $("accountPassword").autocomplete = signingUp ? "new-password" : "current-password";
+    $("accountSwitch").textContent = signingUp ? "Already have an account?" : "New to SAINTS PITCH?";
+    $("accountSwitchButton").textContent = signingUp ? "Return to sign in" : "Start new player setup";
+    $("forgotButton").classList.toggle("hidden", signingUp);
+    hide("resetPasswordPanel");
   }
-  $("toggleAuthMode").addEventListener("click", () => {
-    if (authMode === "login") beginNewPlayer();
-    else setAuthMode("login");
+
+  $("accountSwitchButton").addEventListener("click", () => {
+    mode = mode === "login" ? "signup" : "login";
+    renderAccountMode();
   });
-  $("submitAuth").addEventListener("click", async () => {
+
+  $("accountSubmit").addEventListener("click", async () => {
+    if (!supabaseClient) return say("Connect Supabase first.", true);
+
+    const email = $("accountEmail").value.trim().toLowerCase();
+    const password = $("accountPassword").value;
+    const name = $("accountName").value.trim();
+
+    if (!email) return say("Enter your email address.", true);
+    if (password.length < 8) return say("Use a password with at least 8 characters.", true);
+    if (mode === "signup" && !name) return say("Enter your name.", true);
+
+    $("accountSubmit").disabled = true;
+
     try {
-      if (!client) throw new Error("Connect the account service first.");
-      const email = $("email").value.trim();
-      const password = $("password").value;
-      if (!email || password.length < 8) throw new Error("Enter your email and a password of at least 8 characters.");
-      if (authMode === "signup") {
-        const { data, error } = await client.auth.signUp({
-          email, password, options: { emailRedirectTo: location.href.split("#")[0] }
+      if (mode === "signup") {
+        const { data, error } = await supabaseClient.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: location.href.split("#")[0],
+            data: {
+              display_name: name,
+              onboarding_started: true,
+              onboarding_complete: false
+            }
+          }
         });
+
         if (error) throw error;
-        if (data.session?.user) await enterApp(data.session.user);
-        else message("Check your email to confirm your account, then come back and sign in.");
+
+        const draft = { display_name: name };
+        localStorage.setItem(`${draftKey}:${email}`, JSON.stringify(draft));
+
+        if (data.session?.user) {
+          answers = draft;
+          startPlayerQuestions();
+        } else {
+          say("Account created. Check your email to verify it. Then return here and sign in to finish your player setup.");
+          mode = "login";
+          renderAccountMode();
+        }
       } else {
-        const { data, error } = await client.auth.signInWithPassword({ email, password });
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
         if (error) throw error;
         await enterApp(data.user);
       }
-    } catch (error) { message(error.message, true); }
+    } catch (error) {
+      say(error.message || "We couldn’t complete that request.", true);
+    } finally {
+      $("accountSubmit").disabled = false;
+    }
   });
 
-  $("resetPassword").addEventListener("click", async () => {
+  $("googleButton").addEventListener("click", async () => {
+    if (!supabaseClient) return say("Connect Supabase first.", true);
     try {
-      if (!client) throw new Error("Connect the account service first.");
-      const email = $("email").value.trim();
-      if (!email) throw new Error("Enter your email address first.");
-      const { error } = await client.auth.resetPasswordForEmail(email, {
+      const { error } = await supabaseClient.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: location.href.split("#")[0] }
+      });
+      if (error) throw error;
+    } catch (error) {
+      say(error.message, true);
+    }
+  });
+
+  $("forgotButton").addEventListener("click", async () => {
+    if (!supabaseClient) return say("Connect Supabase first.", true);
+    const email = $("accountEmail").value.trim().toLowerCase();
+    if (!email) return say("Enter your email address first.", true);
+
+    try {
+      const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
         redirectTo: location.href.split("#")[0]
       });
       if (error) throw error;
-      message("If that account exists, a password reset email has been sent.");
-    } catch (error) { message(error.message, true); }
-  });
-
-  $("saveNewPassword").addEventListener("click", async () => {
-    try {
-      const password = $("newPassword").value;
-      if (password.length < 8) throw new Error("Use at least 8 characters.");
-      const { error } = await client.auth.updateUser({ password });
-      if (error) throw error;
-      $("passwordPanel").classList.add("hidden");
-      $("newPassword").value = "";
-      message("Your password has been updated.");
-      if (user) await enterApp(user);
-    } catch (error) { message(error.message, true); }
-  });
-
-  $("signOut").addEventListener("click", async () => {
-    try {
-      if (client) {
-        const { error } = await client.auth.signOut();
-        if (error) throw error;
-      }
-      user = null;
-      records = { profile: {}, progress: [], recovery: [] };
-      minorBlocked = false;
-      $("app").classList.add("hidden");
-      $("entryScreen").classList.remove("hidden");
-      $("onboardingScreen").classList.add("hidden");
-      $("accountScreen").classList.add("hidden");
-      $("signOut").classList.add("hidden");
-      $("openAccount").textContent = "Account / sign in";
-      $("signedInBox").classList.add("hidden");
-      message("Signed out. Private records are no longer shown.");
-    } catch (error) { message(error.message, true); }
-  });
-
-  async function enterApp(authUser) {
-    user = authUser;
-    $("accountScreen").classList.add("hidden");
-    $("app").classList.remove("hidden");
-    $("signOut").classList.remove("hidden");
-    $("openAccount").textContent = "My account";
-    const metadata = user.app_metadata || {};
-    $("coachNav").classList.toggle("hidden", metadata.role !== "coach");
-
-    const { data, error } = await client
-      .from("player_records")
-      .select("data")
-      .eq("player_id", user.id)
-      .maybeSingle();
-
-    if (error) {
-      message("Signed in, but the database is not ready: " + error.message, true);
-    } else if (data?.data) {
-      records = { profile: {}, progress: [], recovery: [], ...data.data };
-    }
-    if (!records.profile.name && user.user_metadata?.display_name) records.profile.name = user.user_metadata.display_name;
-
-    loadProfile();
-    renderLists();
-    const needsOnboarding = user.user_metadata?.onboarding_started === true && user.user_metadata?.onboarding_complete !== true;
-    if (needsOnboarding) {
-      onboardingDraft = { ...(records.profile || {}), name: records.profile?.name || user.user_metadata?.display_name || "" };
-      buildOnboardingSteps();
-      showOnboarding();
-      return;
-    }
-    $("entryScreen").classList.add("hidden");
-    $("welcome").textContent = records.profile.name
-      ? `Welcome back, ${records.profile.name}.`
-      : "Your next step in football.";
-    updateWeeklyNote();
-    renderAccount();
-  }
-
-  function buildOnboardingSteps() {
-    onboardingSteps = [
-      { key: "dateOfBirth", title: "When is your birthday?", help: "We use this to show the right player and guardian steps.", type: "date", required: true },
-      { key: "profilePhotoNote", title: "Add a profile photo?", help: "Photo uploads will be enabled after private photo storage is configured. You can skip this for now.", type: "skip", optional: true },
-      { key: "nationality", title: "What is your nationality?", help: "Optional. You can skip this.", type: "text", optional: true },
-      { key: "country", title: "Which country do you live in?", help: "This sets the local football pathway shown in your profile.", type: "select", required: true, options: ["Australia", "England", "Scotland", "Wales", "Ireland", "United States", "Canada", "New Zealand", "Other"] },
-      { key: "gender", title: "How do you describe your gender?", help: "Optional. Choose ‘Prefer not to say’ if you don’t want to answer.", type: "select", optional: true, options: ["Prefer not to say", "Girl / woman", "Boy / man", "Non-binary", "I describe it another way"] },
-      { key: "journey", title: "Where are you in your football journey?", help: "Pick the closest fit. You can change it later.", type: "select", required: true, options: ["New to football", "Returning after a break", "Social / community", "Club player", "Working toward trials", "High level / academy", "Professional", "Not sure — help me work it out"] },
-      { key: "position", title: "What position do you play?", help: "Choose any that fit. If you’re unsure, choose ‘Help me explore positions’. ", type: "multi", required: true, options: ["Goalkeeper", "Centre back", "Full back / wing back", "Defensive midfielder", "Centre midfielder", "Attacking midfielder", "Winger", "Striker", "Multiple positions", "Help me explore positions", "Other"] },
-      { key: "goals", title: "What would you like help with?", help: "Choose as many as you like.", type: "multi", required: true, options: ["Learn football basics", "Build confidence", "Improve fitness", "Improve ball skills", "Understand my position", "Prepare for a trial", "Improve match performance", "Return after time away", "Work toward a higher level", "Other"] },
-      { key: "preferredFoot", title: "Which foot do you prefer?", help: "This helps tailor practice ideas. You can choose more than one.", type: "select", required: true, options: ["Right", "Left", "Both", "Not sure"] },
-      { key: "trainingAvailability", title: "How often can you train?", help: "Choose what fits your week right now.", type: "select", required: true, options: ["Once a week", "Twice a week", "Three times a week", "Four or more times", "It changes each week", "Not sure yet"] },
-      { key: "trainingAccess", title: "What training space or equipment can you use?", help: "Choose any that apply.", type: "multi", required: true, options: ["Small space at home", "Ball", "Cones", "Wall or rebounder", "Gym", "Club training", "Pitch access", "No equipment yet", "Other"] },
-      { key: "nutritionPreference", title: "What should food suggestions consider?", help: "Choose any preferences. These ideas are not medical nutrition advice.", type: "multi", required: false, options: ["No preference", "Vegetarian", "Vegan", "Halal", "Kosher", "Gluten-free", "Dairy-free", "Cultural or religious needs", "Budget-friendly", "I want to discuss this with Coach"] },
-      { key: "nutritionNotes", title: "Any allergies or food needs Coach should know?", help: "Optional. For safety, a coach inbox is not a substitute for a qualified clinician or dietitian.", type: "textarea", optional: true },
-      { key: "matchDayPreferences", title: "What would you like to track on match day?", help: "Choose any that sound useful.", type: "multi", required: false, options: ["Minutes played", "Position played", "Confidence", "One thing I did well", "One thing to practise", "Questions for Coach", "I’m not playing matches yet"] },
-      { key: "recoveryPreferences", title: "What would you like to check in about after training?", help: "Choose any. Don’t use this for urgent medical help.", type: "multi", required: false, options: ["Energy", "Sleep routine", "Rest days", "How training felt", "Progress over time", "Something I want Coach to know"] },
-      { key: "phoneBackup", title: "Phone backup", help: "Phone backup is not active yet. We’ll add it after SMS verification is configured. Your verified email remains the recovery method for now.", type: "skip", optional: true }
-    ];
-  }
-
-  function ageFromDate(value) {
-    if (!value) return null;
-    const birth = new Date(`${value}T00:00:00`);
-    const today = new Date();
-    let age = today.getFullYear() - birth.getFullYear();
-    const beforeBirthday = today.getMonth() < birth.getMonth() || (today.getMonth() === birth.getMonth() && today.getDate() < birth.getDate());
-    if (beforeBirthday) age--;
-    return age;
-  }
-
-  function showOnboarding() {
-    $("entryScreen").classList.add("hidden");
-    $("accountScreen").classList.add("hidden");
-    $("app").classList.add("hidden");
-    $("onboardingScreen").classList.remove("hidden");
-    renderOnboardingStep();
-  }
-
-  function renderOnboardingStep() {
-    const step = onboardingSteps[onboardingStep];
-    if (!step) return finishOnboarding();
-    $("onboardingCount").textContent = `Step ${onboardingStep + 1} of ${onboardingSteps.length}`;
-    $("onboardingBack").disabled = onboardingStep === 0;
-    $("onboardingNext").textContent = onboardingStep === onboardingSteps.length - 1 ? "Finish setup" : "Continue";
-    let control = "";
-    const current = onboardingDraft[step.key];
-    if (step.type === "skip") {
-      control = '<div class="notice">Profile photo upload is not connected yet. Skip this step and add it later.</div>';
-    } else if (step.type === "select") {
-      control = `<select id="wizardAnswer"><option value="">Choose one</option>${step.options.map(option => `<option ${current === option ? "selected" : ""}>${esc(option)}</option>`).join("")}</select>`;
-    } else if (step.type === "multi") {
-      const selected = Array.isArray(current) ? current : [];
-      control = `<div class="grid">${step.options.map((option, index) => `<label class="card"><input type="checkbox" name="wizardAnswer" value="${esc(option)}" ${selected.includes(option) ? "checked" : ""}> ${esc(option)}</label>`).join("")}</div>`;
-    } else {
-      control = step.type === "textarea"
-        ? `<textarea id="wizardAnswer" maxlength="1200">${esc(current || "")}</textarea>`
-        : `<input id="wizardAnswer" type="${esc(step.type)}" value="${esc(current || "")}" ${step.type === "date" ? `max="${new Date().toISOString().slice(0, 10)}"` : ""} ${step.type === "password" ? 'autocomplete="new-password"' : ""}>`;
-    }
-    $("onboardingQuestion").innerHTML = `<h2>${esc(step.title)}</h2><p class="muted">${esc(step.help)}</p>${control}`;
-  }
-
-  function readOnboardingAnswer(step) {
-    if (step.type === "skip") return "skipped";
-    if (step.type === "multi") return [...document.querySelectorAll('input[name="wizardAnswer"]:checked')].map(input => input.value);
-    const input = $("wizardAnswer");
-    return input ? input.value.trim() : "";
-  }
-
-  $("onboardingBack").addEventListener("click", () => {
-    if (onboardingStep > 0) { onboardingStep--; renderOnboardingStep(); }
-  });
-
-  $("onboardingExit").addEventListener("click", () => {
-    if (preSignup) {
-      preSignup = false;
-      $("onboardingScreen").classList.add("hidden");
-      $("entryScreen").classList.remove("hidden");
-    } else {
-      message("Finish setup before opening your dashboard.");
-    }
-  });
-
-  $("onboardingNext").addEventListener("click", async () => {
-    const step = onboardingSteps[onboardingStep];
-    const answer = readOnboardingAnswer(step);
-    if (preSignup) {
-      if (!answer) return message("Enter an answer before continuing.", true);
-      if (step.key === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(answer)) return message("Enter a valid email address.", true);
-      if (step.key === "password" && answer.length < 8) return message("Use a password with at least 8 characters.", true);
-      onboardingDraft[step.key] = answer;
-      if (onboardingStep < onboardingSteps.length - 1) {
-        onboardingStep++;
-        renderOnboardingStep();
-        return;
-      }
-      try {
-        const { data, error } = await client.auth.signUp({
-          email: onboardingDraft.email,
-          password: onboardingDraft.password,
-          options: {
-            emailRedirectTo: location.href.split("#")[0],
-            data: { display_name: onboardingDraft.display_name, onboarding_started: true, onboarding_complete: false }
-          }
-        });
-        if (error) throw error;
-        preSignup = false;
-        onboardingDraft = {};
-        if (data.session?.user) {
-          await enterApp(data.session.user);
-        } else {
-          $("onboardingScreen").classList.add("hidden");
-          $("accountScreen").classList.remove("hidden");
-          $("connectionCard").classList.add("hidden");
-          $("authBox").classList.remove("hidden");
-          setAuthMode("login");
-          message("Account created. Check your email to verify it, then sign in to continue your player setup.");
-        }
-      } catch (error) {
-        showError(error);
-      }
-      return;
-    }
-    const isEmpty = Array.isArray(answer) ? answer.length === 0 : !answer;
-    if (step.required && isEmpty) return message("Choose an answer before continuing.", true);
-    onboardingDraft[step.key] = answer;
-    if (step.key === "dateOfBirth" && ageFromDate(answer) < 16) {
-      minorBlocked = true;
-      $("onboardingQuestion").innerHTML = `<h2>A parent or guardian needs to help with setup</h2><p>SAINTS PITCH requires guardian approval for players under 16. The secure guardian account and approval link are not connected yet, so this account cannot finish onboarding in this draft.</p><p class="small muted">No guardian details have been sent or approved. Please stop here until the guardian setup is ready.</p>`;
-      $("onboardingBack").classList.add("hidden");
-      $("onboardingNext").classList.add("hidden");
-      return;
-    }
-    if (onboardingStep < onboardingSteps.length - 1) {
-      onboardingStep++;
-      renderOnboardingStep();
-    } else {
-      await finishOnboarding();
-    }
-  });
-
-  async function finishOnboarding() {
-    if (!user) return message("Sign in again to finish setting up your profile.", true);
-    records.profile = {
-      ...(records.profile || {}),
-      name: user.user_metadata?.display_name || records.profile?.name || "",
-      country: onboardingDraft.country || "Australia",
-      journey: onboardingDraft.journey || "Not sure — help me work it out",
-      level: onboardingDraft.level || "Not sure — ask Coach",
-      position: onboardingDraft.position || ["Help me explore positions"],
-      goal: onboardingDraft.goals || [],
-      dateOfBirth: onboardingDraft.dateOfBirth || "",
-      nationality: onboardingDraft.nationality || "",
-      gender: onboardingDraft.gender || "Prefer not to say",
-      preferredFoot: onboardingDraft.preferredFoot || "Not sure",
-      trainingAvailability: onboardingDraft.trainingAvailability || "Not sure yet",
-      trainingAccess: onboardingDraft.trainingAccess || [],
-      nutritionPreference: onboardingDraft.nutritionPreference || [],
-      nutritionNotes: onboardingDraft.nutritionNotes || "",
-      matchDayPreferences: onboardingDraft.matchDayPreferences || [],
-      recoveryPreferences: onboardingDraft.recoveryPreferences || [],
-      phoneBackup: "Not configured"
-    };
-    try {
-      await saveRecords();
-      const { error } = await client.auth.updateUser({ data: { onboarding_complete: true } });
-      if (error) throw error;
-      user = (await client.auth.getUser()).data.user || user;
-      $("onboardingScreen").classList.add("hidden");
-      $("app").classList.remove("hidden");
-      $("signOut").classList.remove("hidden");
-      $("openAccount").textContent = "My account";
-      $("welcome").textContent = records.profile.name ? `Welcome, ${records.profile.name}.` : "Your next step in football.";
-      loadProfile();
-      renderLists();
-      renderAccount();
-      go("home");
-      message("Your player profile is ready.");
+      say("If that account exists, a password reset email has been sent.");
     } catch (error) {
-      showError(error);
+      say(error.message, true);
     }
-  }
+  });
 
-  async function saveRecords() {
-    if (!user || !client) throw new Error("Sign in to save private records.");
-    const { error } = await client.from("player_records").upsert({
-      player_id: user.id,
-      data: records,
-      updated_at: new Date().toISOString()
-    }, { onConflict: "player_id" });
-    if (error) throw error;
-  }
+  $("savePasswordButton").addEventListener("click", async () => {
+    const password = $("newPassword").value;
+    if (password.length < 8) return say("Use at least 8 characters.", true);
 
-  async function sendToCoach(category, payload) {
-    if (!user || !client) throw new Error("Sign in first so this can be sent to the private Coach inbox.");
-    const { error } = await client.from("coach_requests").insert({
-      player_id: user.id, category, payload
-    });
-    if (error) throw error;
-    message("Sent to the private Coach inbox.");
-  }
+    try {
+      const { error } = await supabaseClient.auth.updateUser({ password });
+      if (error) throw error;
+      hide("resetPasswordPanel");
+      $("newPassword").value = "";
+      say("Your password has been updated.");
+    } catch (error) {
+      say(error.message, true);
+    }
+  });
 
-  function showError(error) { message(error?.message || "Something went wrong. Please try again.", true); }
+  const positions = [
+    ["Goalkeeper (GK)", "Goalkeeping"],
+    ["Center-Back (CB)", "Defense"],
+    ["Left-Back (LB)", "Defense"],
+    ["Right-Back (RB)", "Defense"],
+    ["Left Wing-Back (LWB)", "Defense"],
+    ["Right Wing-Back (RWB)", "Defense"],
+    ["Sweeper (SW)", "Defense"],
+    ["Defensive Midfielder (DM)", "Midfield"],
+    ["Central Midfielder (CM)", "Midfield"],
+    ["Attacking Midfielder (AM)", "Midfield"],
+    ["Left Midfielder (LM)", "Midfield"],
+    ["Right Midfielder (RM)", "Midfield"],
+    ["Left Winger (LW)", "Forward / Attack"],
+    ["Right Winger (RW)", "Forward / Attack"],
+    ["Center-Forward (CF)", "Forward / Attack"],
+    ["Striker (ST)", "Forward / Attack"]
+  ];
 
-  const drills = {
-    "Ball control": ["Easy touches using both feet", "Sole rolls and gentle turns", "Keep the ball close in a small space"],
-    "Passing and first touch": ["Receive and return against a safe target", "Practise a relaxed first touch", "Try both feet at a comfortable pace"],
-    "Dribbling and 1v1": ["Use gentle changes of direction", "Practise moving the ball into space", "Imagine a defender and choose a safe route"],
-    "Shooting and finishing": ["Practise set-up touches before a shot", "Choose a safe target and comfortable distance", "Work on placement before power"],
-    "Defending": ["Watch a short clip and notice body shape", "Practise scanning and staying balanced", "Talk through when to delay or challenge"],
-    "Goalkeeping": ["Review set position and starting spots", "Practise communication cues", "Study how the keeper adjusts to the ball"],
-    "Speed and agility": ["Begin with an easy warm-up", "Use short, planned footwork at a comfortable pace", "Take full rests between efforts"],
-    "Strength and movement": ["Use only movements you already know are safe for you", "Focus on balance, posture, and control", "Stop if pain or unusual symptoms appear"],
-    "Match awareness": ["Watch a short match clip", "Pause and predict the next action", "Notice space, teammates, and opponents"],
-    "Confidence and decisions": ["Choose one cue to focus on", "Picture a game moment and talk through options", "Write one thing you did well"],
-    "Returning to fitness": ["Start with a short, easy session", "Build gradually over time", "Rest between sessions and notice how you feel"],
-    "Recovery / light day": ["Choose rest or a gentle walk if comfortable", "Drink water and eat regular meals", "Prioritise sleep and check in tomorrow"],
-    "Other — ask Coach": ["Write down what you want to work on", "Send your question to Coach for a tailored plan"]
+  const focusByPosition = {
+    "Goalkeeper (GK)": {
+      "Technical": [
+        "Set position, balance and handling",
+        "Footwork across the goal",
+        "Collecting or safely parrying crosses",
+        "One-on-one decisions",
+        "Short passing, throws and distribution"
+      ],
+      "Tactical": [
+        "Starting position and angles",
+        "Communicating with defenders",
+        "Reading through-balls and crosses",
+        "Choosing when to stay or come out"
+      ],
+      "Speed & Agility": [
+        "Quick side steps and repositioning",
+        "Recovering safely for a second save",
+        "Short bursts and changes of direction"
+      ],
+      "Endurance & Power": [
+        "Jumping and landing control",
+        "Building general strength safely",
+        "Staying focused through quieter periods"
+      ],
+      "Psychological & Cognitive": [
+        "Resetting after a mistake",
+        "Making calm decisions under pressure",
+        "Clear and confident communication"
+      ]
+    },
+
+    "Center-Back (CB)": {
+      "Technical": [
+        "Balanced one-on-one defending",
+        "Safe tackling and blocking",
+        "Heading technique and timing",
+        "First touch and passing out from the back",
+        "Clearing with either foot"
+      ],
+      "Tactical": [
+        "Holding the defensive line",
+        "Covering a teammate",
+        "Tracking forward runs",
+        "Knowing when to step in or drop"
+      ],
+      "Speed & Agility": [
+        "Turning and accelerating safely",
+        "Lateral movement while defending",
+        "Recovering when an opponent runs in behind"
+      ],
+      "Endurance & Power": [
+        "Jumping and landing control",
+        "Balance in physical contests",
+        "Maintaining movement quality through a match"
+      ],
+      "Psychological & Cognitive": [
+        "Staying composed when building play",
+        "Making clear decisions under pressure",
+        "Communicating and organising teammates"
+      ]
+    },
+
+    "Left-Back (LB)": null,
+    "Right-Back (RB)": null,
+    "Left Wing-Back (LWB)": null,
+    "Right Wing-Back (RWB)": null,
+    "Sweeper (SW)": null,
+
+    "Defensive Midfielder (DM)": {
+      "Technical": [
+        "Scanning before receiving",
+        "First touch under pressure",
+        "Passing forward or switching play",
+        "Turning away from pressure",
+        "Winning and keeping the ball safely"
+      ],
+      "Tactical": [
+        "Protecting space in front of the defence",
+        "Choosing when to press or hold position",
+        "Supporting centre-backs",
+        "Helping the team keep possession"
+      ],
+      "Speed & Agility": [
+        "Short acceleration into space",
+        "Changing direction while tracking play",
+        "Recovering quickly after transitions"
+      ],
+      "Endurance & Power": [
+        "Building general strength safely",
+        "Maintaining movement across a match",
+        "Balance when challenging for the ball"
+      ],
+      "Psychological & Cognitive": [
+        "Checking surroundings before receiving",
+        "Staying patient and disciplined",
+        "Choosing safe options under pressure"
+      ]
+    },
+
+    "Central Midfielder (CM)": {
+      "Technical": [
+        "First touch and receiving",
+        "Passing over short and longer distances",
+        "Turning and carrying the ball",
+        "Using both feet where comfortable"
+      ],
+      "Tactical": [
+        "Finding space to support teammates",
+        "Scanning and awareness",
+        "Switching play when space opens",
+        "Moving between attack and defence"
+      ],
+      "Speed & Agility": [
+        "Quick support runs",
+        "Changing direction to find space",
+        "Short bursts to press or recover"
+      ],
+      "Endurance & Power": [
+        "Building general fitness safely",
+        "Keeping movement consistent",
+        "Balance and control in challenges"
+      ],
+      "Psychological & Cognitive": [
+        "Making decisions with limited time",
+        "Staying available after passing",
+        "Communicating simple options"
+      ]
+    },
+
+    "Attacking Midfielder (AM)": {
+      "Technical": [
+        "Receiving on the half-turn",
+        "Close control in tight spaces",
+        "Through-passes and combinations",
+        "Finishing near the box"
+      ],
+      "Tactical": [
+        "Finding space between defenders",
+        "Linking midfield and attack",
+        "Choosing when to pass, carry or shoot",
+        "Moving after creating a pass"
+      ],
+      "Speed & Agility": [
+        "Quick turns in tight areas",
+        "Short changes of pace",
+        "Moving into space after releasing the ball"
+      ],
+      "Endurance & Power": [
+        "Building general strength safely",
+        "Repeating short attacking movements",
+        "Staying balanced when challenged"
+      ],
+      "Psychological & Cognitive": [
+        "Seeing options early",
+        "Taking creative risks at the right time",
+        "Recovering confidence after a missed chance"
+      ]
+    },
+
+    "Left Midfielder (LM)": null,
+    "Right Midfielder (RM)": null,
+    "Left Winger (LW)": null,
+    "Right Winger (RW)": null,
+    "Center-Forward (CF)": null,
+    "Striker (ST)": null
   };
 
-  $("makeTraining").addEventListener("click", () => {
-    const areas = [...$("focus").selectedOptions].map(option => option.value);
-    const chosen = areas.length ? areas : ["Ball control", "Passing and first touch"];
-    const beginner = ["New to football", "Returning after a break", "Not sure — help me start"].includes($("stage").value);
-    const minutes = parseInt($("time").value, 10) || 25;
-    const warm = Math.max(3, Math.round(minutes * .16));
-    const close = Math.max(3, Math.round(minutes * .12));
-    const work = Math.max(5, minutes - warm - close);
-    const drillCards = chosen.map((area, index) => {
-      const options = drills[area] || drills["Ball control"];
-      const pick = options[index % options.length];
-      const pace = beginner ? "Work at an easy pace; pause whenever you need." : "Keep quality high and take a short rest between rounds.";
-      return `<div class="option"><strong>${esc(area)} · ${Math.max(3, Math.floor(work / chosen.length))} min</strong><p>${esc(pick)}.</p><p><strong>How:</strong> Set a small, safe area. Do 3 rounds of 45 seconds with 30 seconds to rest. Focus on control before speed.</p><p><strong>Make it easier:</strong> Slow down, use more space, or do fewer rounds. <strong>Make it harder:</strong> Add a direction change or use the other foot, only if it stays controlled.</p><p class="small muted">${esc(pace)}</p></div>`;
-    }).join("");
-    $("trainingResult").innerHTML = `
-      <div class="result">
-        <span class="pill">${esc($("stage").value)}</span><span class="pill">${minutes} min</span><span class="pill">${esc($("equipment").value)}</span>
-        <h3>${beginner ? "A steady session to build confidence" : "Your session options"}</h3>
-        <p><strong>Role:</strong> ${esc($("trainPosition").value)}. Choose one or two focus areas below; you can save the rest for another day.</p>
-        <div class="option"><strong>1. Warm up · ${warm} min</strong><p>Walk or move easily for 2 minutes, then practise gentle side steps, ankle rolls, and comfortable ball touches. Keep the effort light.</p></div>
-        ${drillCards}
-        <div class="option"><strong>3. Finish · ${close} min</strong><p>Walk slowly, take a few calm breaths, and note one thing that felt better and one thing to practise next time.</p></div>
-        <p><strong>Quick adjustment:</strong> If you have less energy than expected, do only the warm-up and one focus block. If you have more time, repeat your favourite block after resting.</p>
-        <p class="small muted">General football practice only. This is not an individualized load plan, elite performance prescription, or injury rehabilitation. Stop if you feel pain, dizziness, or unusual symptoms.</p>
-      </div>`;
-  });
+  const sharedFocus = {
+    fullback: {
+      "Technical": [
+        "One-on-one defending out wide",
+        "First touch near the touchline",
+        "Crosses and cutbacks",
+        "Passing inside under pressure",
+        "Carrying the ball forward"
+      ],
+      "Tactical": [
+        "Timing an overlapping run",
+        "Recovering to help defend",
+        "Supporting a winger or midfielder",
+        "Knowing when to attack or hold position"
+      ],
+      "Speed & Agility": [
+        "Short acceleration along the line",
+        "Changing direction to defend",
+        "Recovering after an attacking run"
+      ],
+      "Endurance & Power": [
+        "Building general fitness safely",
+        "Repeating runs with enough recovery",
+        "Balance and control when challenged"
+      ],
+      "Psychological & Cognitive": [
+        "Checking your shoulder before receiving",
+        "Choosing when to cross or pass back",
+        "Staying composed in one-on-one defending"
+      ]
+    },
 
-  const roleSuggestions = {
-    "Not sure — show me a range": [
-      ["Goalkeeper", "Organises, reacts, communicates, and protects the goal."],
-      ["Midfielder", "Connects play and helps in both attack and defence."],
-      ["Winger", "Finds wide space and helps create chances."]
+    wideMid: {
+      "Technical": [
+        "First touch and passing",
+        "Crossing and cutbacks",
+        "Dribbling in one-on-one situations",
+        "Receiving and combining with teammates"
+      ],
+      "Tactical": [
+        "Finding space on the left or right",
+        "Supporting the full-back in defence",
+        "Choosing when to stay wide or move inside",
+        "Timing runs behind the defence"
+      ],
+      "Speed & Agility": [
+        "Short bursts into space",
+        "Changing direction with the ball",
+        "Slowing down and accelerating with control"
+      ],
+      "Endurance & Power": [
+        "Building general fitness safely",
+        "Repeating runs with recovery",
+        "Balance when protecting the ball"
+      ],
+      "Psychological & Cognitive": [
+        "Deciding when to take on a defender",
+        "Scanning before receiving",
+        "Staying confident after losing the ball"
+      ]
+    },
+
+    winger: {
+      "Technical": [
+        "Dribbling and one-on-one skills",
+        "First touch while moving",
+        "Crosses and cutbacks",
+        "Finishing from wide areas"
+      ],
+      "Tactical": [
+        "Timing runs behind defenders",
+        "Choosing when to stay wide or cut inside",
+        "Supporting teammates after a pass",
+        "Tracking back to help defend"
+      ],
+      "Speed & Agility": [
+        "Short acceleration with the ball",
+        "Changing direction at a controlled pace",
+        "Quick steps to create space"
+      ],
+      "Endurance & Power": [
+        "Building general fitness safely",
+        "Repeating short runs with enough rest",
+        "Balance when challenged"
+      ],
+      "Psychological & Cognitive": [
+        "Choosing when to dribble or pass",
+        "Making decisions near the box",
+        "Building confidence after a missed attempt"
+      ]
+    },
+
+    forward: {
+      "Technical": [
+        "Finishing with placement before power",
+        "First touch under pressure",
+        "Movement to receive a pass",
+        "Link-up and hold-up play",
+        "Heading technique with safe coaching"
+      ],
+      "Tactical": [
+        "Finding space in the penalty area",
+        "Timing runs between or behind defenders",
+        "Linking with midfielders",
+        "Choosing when to press"
+      ],
+      "Speed & Agility": [
+        "Short acceleration into space",
+        "Changing direction to lose a marker",
+        "Reacting to loose balls"
+      ],
+      "Endurance & Power": [
+        "Building general strength safely",
+        "Balance when shielding the ball",
+        "Repeating short movements with recovery"
+      ],
+      "Psychological & Cognitive": [
+        "Staying composed in front of goal",
+        "Choosing when to shoot or pass",
+        "Resetting after a missed chance"
+      ]
+    },
+
+    general: {
+      "Technical": [
+        "First touch and ball control",
+        "Passing with both feet",
+        "Dribbling and turning",
+        "Finishing or goalkeeping basics"
+      ],
+      "Tactical": [
+        "Understanding space and team shape",
+        "Scanning before receiving",
+        "Knowing when to support or recover"
+      ],
+      "Speed & Agility": [
+        "Balance and comfortable movement",
+        "Changing direction safely",
+        "Short bursts with full recovery"
+      ],
+      "Endurance & Power": [
+        "Building fitness gradually",
+        "Basic strength and body control",
+        "Rest and recovery habits"
+      ],
+      "Psychological & Cognitive": [
+        "Building confidence",
+        "Making decisions under pressure",
+        "Setting a small goal with Coach"
+      ]
+    }
+  };
+
+  for (const role of ["Left-Back (LB)", "Right-Back (RB)", "Left Wing-Back (LWB)", "Right Wing-Back (RWB)"]) {
+    focusByPosition[role] = sharedFocus.fullback;
+  }
+
+  focusByPosition["Sweeper (SW)"] = {
+    "Technical": [
+      "Defending space behind teammates",
+      "Safe tackling and blocking",
+      "First touch and passing out from defence",
+      "Clearing safely with either foot"
     ],
-    "Organising and using my hands": [
-      ["Goalkeeper", "Uses hands, reads danger, and communicates with teammates."],
-      ["Centre back", "Organises the defence and protects central space."],
-      ["Centre midfielder", "Can help organise and connect different parts of the team."]
+    "Tactical": [
+      "Reading danger early",
+      "Covering behind the defensive line",
+      "Communicating with defenders and goalkeeper",
+      "Choosing when to hold position or step forward"
     ],
-    "Defending and reading danger": [
-      ["Centre back", "Protects central areas and reads forward play."],
-      ["Full back", "Defends wide areas and can support attacks."],
-      ["Defensive midfielder", "Helps protect the defence and regain or recycle the ball."]
+    "Speed & Agility": [
+      "Turning and recovering into space",
+      "Changing direction while tracking play",
+      "Short acceleration to cover a teammate"
     ],
-    "Passing and linking play": [
-      ["Centre midfielder", "Receives, scans, passes, and connects the team."],
-      ["Attacking midfielder", "Finds space and links with forwards."],
-      ["Centre back", "Can help build play from the back."]
+    "Endurance & Power": [
+      "Building general fitness safely",
+      "Balance and body control",
+      "Maintaining focus through a match"
     ],
-    "Creating chances": [
-      ["Winger", "Takes on defenders and creates from wide areas."],
-      ["Attacking midfielder", "Creates through the middle and combines near goal."],
-      ["Second striker", "Links with teammates and supports the main forward."]
-    ],
-    "Scoring goals": [
-      ["Striker", "Finds space near goal and finishes chances."],
-      ["Winger", "Attacks space from wide areas and can score."],
-      ["Attacking midfielder", "Can arrive near the box to create or finish."]
-    ],
-    "Running into space": [
-      ["Winger", "Uses wide space to move the team forward."],
-      ["Full back", "Can support wide attacks and defend wide areas."],
-      ["Striker", "Times runs behind or between defenders."]
-    ],
-    "A bit of everything": [
-      ["Centre midfielder", "Often involved in both attack and defence."],
-      ["Full back", "Balances defending wide areas and supporting attacks."],
-      ["Winger", "Can defend, carry the ball, and create chances."]
+    "Psychological & Cognitive": [
+      "Staying calm under pressure",
+      "Making decisions early",
+      "Organising teammates clearly"
     ]
   };
 
-  $("findPosition").addEventListener("click", () => {
-    const ideas = roleSuggestions[$("positionLike").value] || roleSuggestions["Not sure — show me a range"];
-    $("positionResult").innerHTML = `
-      <div class="result"><h3>Three roles to explore</h3>
-        ${ideas.map(([name, description]) => `<div class="option"><strong>${esc(name)}</strong><p>${esc(description)}</p></div>`).join("")}
+  for (const role of ["Left Midfielder (LM)", "Right Midfielder (RM)"]) {
+    focusByPosition[role] = sharedFocus.wideMid;
+  }
+
+  for (const role of ["Left Winger (LW)", "Right Winger (RW)"]) {
+    focusByPosition[role] = sharedFocus.winger;
+  }
+
+  for (const role of ["Center-Forward (CF)", "Striker (ST)"]) {
+    focusByPosition[role] = sharedFocus.forward;
+  }
+
+  const generalFocus = sharedFocus.general;
+
+  function renderStep() {
+    const step = stepList[stepIndex];
+    if (!step) return finishSetup();
+
+    $("stepCount").textContent = `Step ${stepIndex + 1} of ${stepList.length}`;
+    $("stepBackButton").disabled = stepIndex === 0;
+    $("stepNextButton").textContent = stepIndex === stepList.length - 1 ? "Finish setup" : "Continue";
+
+    const current = answers[step.key];
+    let control = "";
+
+    if (step.type === "select") {
+      control = `<select id="answer"><option value="">Choose one</option>${
+        step.options.map(option =>
+          `<option ${current === option ? "selected" : ""}>${escapeHtml(option)}</option>`
+        ).join("")
+      }</select>`;
+    } else if (step.type === "position") {
+      control = `<div class="choice-grid">${
+        positions.map(([name, category]) =>
+          `<label class="choice-card">
+            <input type="radio" name="answer" value="${escapeHtml(name)}" ${current === name ? "checked" : ""}>
+            <span>${escapeHtml(name)}</span>
+          </label>`
+        ).join("")
+      }</div>
+      <p style="margin-top:16px">
+        <button class="inline-link" id="openQuizButton" type="button">Help me explore positions</button>
+      </p>
+      <div id="positionQuiz" class="result hidden">
+        <h3>Position finder</h3>
+        <p class="muted">Choose what sounds interesting. These ideas are a starting point, not a final answer.</p>
+        <div class="field">
+          <label for="quizAnswer">What do you enjoy most?</label>
+          <select id="quizAnswer">
+            <option value="">Choose one</option>
+            <option value="hands">Organising and using my hands</option>
+            <option value="defend">Defending and reading danger</option>
+            <option value="pass">Passing and linking play</option>
+            <option value="create">Creating chances</option>
+            <option value="finish">Attacking the goal</option>
+            <option value="run">Running into space</option>
+          </select>
+        </div>
+        <div class="actions">
+          <button class="btn" id="showQuizResults" type="button">Show me ideas</button>
+          <button class="inline-link" id="askCoachCall" type="button">Still unsure? Ask Coach for a call</button>
+        </div>
+        <div id="quizResults" aria-live="polite"></div>
       </div>`;
-  });
-
-  const mealIdeas = {
-    "Quick breakfast": ["Porridge with fruit and a suitable milk or alternative", "Egg and toast with fruit", "Yoghurt with fruit and oats"],
-    "Lunch for school or work": ["Bean and rice bowl with vegetables", "Chickpea salad wrap using a suitable wrap", "Leftovers from a meal you enjoy"],
-    "Dinner": ["Lentil pasta with tomato sauce", "Rice with beans or tofu and vegetables", "Chicken or tofu with potatoes and vegetables"],
-    "Snack before training": ["Banana and yoghurt or alternative", "Toast with a suitable spread", "Fruit and a simple sandwich"],
-    "Food after training": ["Rice bowl with beans, egg, chicken, or tofu", "Sandwich with a filling you enjoy", "Yoghurt or alternative with fruit and cereal"],
-    "Budget ideas": ["Lentils and rice with frozen vegetables", "Baked potato with beans", "Eggs or tofu with toast and vegetables"],
-    "Help plan my week": ["Choose a breakfast you can repeat", "Plan one easy lunch and one easy dinner", "Use leftovers to save time and money"],
-    "Something else": ["Write your situation below and ask Coach to help"]
-  };
-
-  $("makeMeals").addEventListener("click", () => {
-    const rawIdeas = mealIdeas[$("mealKind").value] || [];
-    const style = $("foodStyle").value;
-    const avoid = $("avoid").value.trim();
-    let ideas = rawIdeas.map(idea => {
-      if (style === "Vegan") return idea.replace(/egg|chicken|yoghurt/gi, "beans, tofu, or a suitable plant-based alternative");
-      if (style === "Vegetarian") return idea.replace(/chicken/gi, "beans, eggs, tofu, or another vegetarian filling");
-      if (style === "Halal requirements") return idea.replace(/chicken/gi, "a halal-certified protein you choose");
-      if (style === "Kosher requirements") return idea.replace(/chicken/gi, "a kosher-certified protein you choose");
-      if (style === "Gluten-free preference") return `${idea} Choose a product specifically labelled gluten-free where needed.`;
-      if (style === "Dairy-free preference") return idea.replace(/yoghurt/gi, "a suitable dairy-free alternative").replace(/milk/gi, "a suitable dairy-free alternative");
-      return idea;
-    });
-    if (avoid) {
-      const terms = avoid.toLowerCase().split(/[,;\n]+/).map(x => x.trim()).filter(Boolean);
-      ideas = ideas.filter(idea => !terms.some(term => term.length > 1 && idea.toLowerCase().includes(term)));
+    } else if (step.type === "goals") {
+      const groups = focusByPosition[answers.position] || generalFocus;
+      const selected = Array.isArray(current) ? current : [];
+      control = Object.entries(groups).map(([category, options]) =>
+        `<section class="choice-group">
+          <h3>${escapeHtml(category)}</h3>
+          <div class="choice-grid">${options.map(option =>
+            `<label class="choice-card">
+              <input type="checkbox" name="answer" value="${escapeHtml(category + ": " + option)}" ${selected.includes(category + ": " + option) ? "checked" : ""}>
+              <span>${escapeHtml(option)}</span>
+            </label>`
+          ).join("")}</div>
+        </section>`
+      ).join("");
+    } else if (step.type === "equipment") {
+      const selected = Array.isArray(current?.selected) ? current.selected : [];
+      control = `<div class="choice-grid">${
+        step.options.map(option =>
+          `<label class="choice-card">
+            <input type="checkbox" name="answer" value="${escapeHtml(option)}" ${selected.includes(option) ? "checked" : ""}>
+            <span>${escapeHtml(option)}</span>
+          </label>`
+        ).join("")
+      }</div>
+      <div class="field" style="margin-top:14px">
+        <label for="equipmentNotes">Tell us what you have or what you need</label>
+        <textarea id="equipmentNotes" maxlength="500" placeholder="For example: a driveway, a park, one ball, or no safe space at home.">${escapeHtml(current?.notes || "")}</textarea>
+      </div>`;
+    } else if (step.type === "multi") {
+      const selected = Array.isArray(current) ? current : [];
+      control = `<div class="choice-grid">${
+        step.options.map(option =>
+          `<label class="choice-card">
+            <input type="checkbox" name="answer" value="${escapeHtml(option)}" ${selected.includes(option) ? "checked" : ""}>
+            <span>${escapeHtml(option)}</span>
+          </label>`
+        ).join("")
+      }</div>`;
+    } else if (step.type === "textarea") {
+      control = `<textarea id="answer" maxlength="1200">${escapeHtml(current || "")}</textarea>`;
+    } else if (step.type === "skip") {
+      control = `<div class="notice">${escapeHtml(step.note)}</div>`;
+    } else {
+      control = `<input id="answer" type="${escapeHtml(step.type)}" value="${escapeHtml(current || "")}" ${step.type === "date" ? `max="${new Date().toISOString().slice(0, 10)}"` : ""}>`;
     }
-    $("mealResult").innerHTML = `
-      <div class="result"><h3>${ideas.length ? "Options to discuss or adapt" : "Let’s ask Coach to help"}</h3>
-        ${ideas.length ? ideas.map((idea, i) => `<div class="option"><strong>Option ${i + 1}</strong><p>${esc(idea)}</p><p><strong>Make it work:</strong> Use ingredients you already have, choose an affordable protein and carbohydrate you enjoy, and add fruit or vegetables when available.</p></div>`).join("") : '<p>Your avoid list removed these general ideas. Send your answers to Coach so we can work through suitable choices together.</p>'}
-        <p><strong>Preference:</strong> ${esc(style)} · <strong>Budget:</strong> ${esc($("budget").value)}</p>
-        ${avoid ? `<p><strong>Foods to avoid provided:</strong> ${esc(avoid)}</p>` : ""}
-        <p class="small muted">This is general food inspiration, not a meal prescription or allergy-safety check. Text matching cannot detect hidden ingredients or cross-contact. Check labels with a parent/guardian or qualified professional for allergies, religious requirements, or medical needs.</p>
-      </div>`;
-  });
 
-  $("saveRecovery").addEventListener("click", async () => {
-    records.recovery.unshift({
-      date: new Date().toISOString().slice(0, 10),
-      need: $("recoveryNeed").value,
-      energy: $("energy").value,
-      notes: $("recoveryNotes").value.trim()
-    });
-    try { await saveRecords(); renderLists(); message("Check-in saved to your private account."); }
-    catch (error) { records.recovery.shift(); showError(error); }
-  });
-
-  $("saveProgress").addEventListener("click", async () => {
-    const text = $("logText").value.trim();
-    if (!text) return message("Write a short entry first.", true);
-    const entry = { date: new Date().toISOString().slice(0, 10), type: $("logType").value, text };
-    records.progress.unshift(entry);
-    try {
-      await saveRecords();
-      $("logText").value = "";
-      renderLists();
-      updateWeeklyNote();
-      message("Progress saved to your private account.");
-    } catch (error) { records.progress.shift(); showError(error); }
-  });
-
-  $("saveProfile").addEventListener("click", async () => {
-    const previous = records.profile;
-    records.profile = {
-      ...(records.profile || {}),
-      name: $("playerName").value.trim(),
-      country: $("country").value,
-      journey: $("journey").value,
-      level: $("level").value,
-      position: $("profilePosition").value,
-      goal: $("profileGoal").value.trim()
-    };
-    try {
-      await saveRecords();
-      $("welcome").textContent = records.profile.name ? `Welcome back, ${records.profile.name}.` : "Your next step in football.";
-      renderAccount();
-      message("Profile saved to your private account.");
-    } catch (error) { records.profile = previous; showError(error); }
-  });
-
-  function loadProfile() {
-    const profile = records.profile || {};
-    $("playerName").value = profile.name || "";
-    $("country").value = profile.country || "Australia";
-    updatePathways();
-    if (profile.level) $("level").value = profile.level;
-    $("journey").value = profile.journey || "New to football";
-    $("profilePosition").value = Array.isArray(profile.position) ? profile.position[0] : (profile.position || "Not sure yet");
-    $("profileGoal").value = Array.isArray(profile.goal) ? profile.goal.join(", ") : (profile.goal || "");
+    $("question").innerHTML = `<h2>${escapeHtml(step.title)}</h2><p class="muted">${escapeHtml(step.help)}</p>${control}`;
   }
 
-  function renderLists() {
-    $("progressList").innerHTML = (records.progress || []).map(item => `
-      <div class="list-item"><strong>${esc(item.type)} · ${esc(item.date)}</strong><p>${esc(item.text)}</p></div>
-    `).join("") || '<p class="muted">Your saved entries will appear here after you sign in.</p>';
+  function readAnswer(step) {
+    if (step.type === "position") {
+      return document.querySelector('input[name="answer"]:checked')?.value ||
+        (coachCallRequested ? "Position chat requested" : "");
+    }
 
-    $("recoveryList").innerHTML = (records.recovery || []).slice(0, 8).map(item => `
-      <div class="list-item"><strong>${esc(item.date)} · ${esc(item.need)}</strong><p>Energy: ${esc(item.energy)}${item.notes ? ` · ${esc(item.notes)}` : ""}</p></div>
-    `).join("") || '<p class="muted">Your saved check-ins will appear here after you sign in.</p>';
+    if (step.type === "goals" || step.type === "multi" || step.type === "equipment") {
+      const selected = [...document.querySelectorAll('input[name="answer"]:checked')].map(input => input.value);
+      if (step.type === "equipment") {
+        return {
+          selected,
+          notes: $("equipmentNotes")?.value.trim() || ""
+        };
+      }
+      return selected;
+    }
+
+    if (step.type === "skip") return "skipped";
+    return $("answer")?.value.trim() || "";
   }
 
-  function updateWeeklyNote() {
-    const recent = (records.progress || []).filter(item =>
-      Date.now() - new Date(item.date).getTime() < 7 * 86400000
-    ).length;
-    $("weeklyNote").textContent = recent
-      ? `You saved ${recent} ${recent === 1 ? "entry" : "entries"} this week.`
-      : "No pressure to have a plan yet. Choose one small next step.";
+  function startPlayerQuestions() {
+    currentStepIsSignup = false;
+    stepIndex = 0;
+    stepList = [
+      { key: "dateOfBirth", title: "When is your birthday?", help: "We use this to show the right player and guardian steps.", type: "date", required: true },
+      { key: "profilePhotoNote", title: "Add a profile photo?", help: "Optional. Photo upload needs private storage to be connected.", type: "skip", note: "You can add a photo later when profile photo storage is enabled." },
+      { key: "nationality", title: "What is your nationality?", help: "Optional. You can skip this.", type: "text" },
+      { key: "country", title: "Which country do you live in?", help: "Choose your country of residence.", type: "select", required: true, options: ["Australia", "England", "Scotland", "Wales", "Ireland", "United States", "Canada", "New Zealand", "Other"] },
+      { key: "gender", title: "How do you describe your gender?", help: "Optional. Choose “Prefer not to say” if you don’t want to answer.", type: "select", options: ["Prefer not to say", "Girl / woman", "Boy / man", "Non-binary", "I describe it another way"] },
+      { key: "journey", title: "Where are you in your football journey?", help: "Pick the closest fit. You can change it later.", type: "select", required: true, options: ["New to football", "Returning after a break", "Social / community", "Club player", "Working toward trials", "High level / academy", "Professional", "Not sure — help me work it out"] },
+      { key: "position", title: "What is your main position?", help: "Choose one. If you’re unsure, use the position finder or ask Coach for a call.", type: "position", required: true },
+      { key: "goals", title: "What would you like help with?", help: "Choose as many as you like. Options are tailored to the position you selected.", type: "goals", required: true },
+      { key: "preferredFoot", title: "Which foot do you prefer?", help: "Choose the closest fit.", type: "select", required: true, options: ["Right", "Left", "Both", "Not sure"] },
+      { key: "trainingFrequency", title: "How often do you train each week?", help: "Choose a number of sessions for a usual week.", type: "select", required: true, options: ["1 time per week", "2 times per week", "3 times per week", "4 times per week", "5 times per week", "6 times per week", "7 times per week"] },
+      { key: "trainingDuration", title: "How long is a usual training session?", help: "Choose the closest fit. This can vary week to week.", type: "select", required: true, options: ["15 minutes", "30 minutes", "45 minutes", "1 hour", "2 hours", "3 hours", "4 hours"] },
+      { key: "trainingSpace", title: "What space or equipment can you use?", help: "Choose anything you have, then add details in your own words.", type: "equipment", options: ["Small space at home", "Ball", "Cones or markers", "Wall or rebounder", "Gym", "Club training", "Pitch access", "No equipment yet"] },
+      { key: "nutritionPreferences", title: "What should food ideas consider?", help: "Optional. These are preferences, not medical nutrition advice.", type: "multi", options: ["No preference", "Vegetarian", "Vegan", "Halal", "Kosher", "Gluten-free preference", "Dairy-free preference", "Cultural or religious needs", "Budget-friendly", "Discuss with Coach"] },
+      { key: "nutritionNotes", title: "Any food needs Coach should know?", help: "Optional. For allergies or medical needs, involve a qualified professional.", type: "textarea" },
+      { key: "matchDayPreferences", title: "What would you like to track on match day?", help: "Choose anything useful to you.", type: "multi", options: ["Minutes played", "Position played", "Confidence", "One thing I did well", "One thing to practise", "Questions for Coach", "I’m not playing matches yet"] },
+      { key: "recoveryPreferences", title: "What would you like to check in about after training?", help: "Optional. Don’t use this for urgent medical help.", type: "multi", options: ["Energy", "Sleep routine", "Rest days", "How training felt", "Progress over time", "Something for Coach"] },
+      { key: "guardianEmail", title: "Parent or guardian email", help: "Required for players under 16. Otherwise you can skip this question.", type: "email" }
+    ];
+
+    renderStep();
+    showOnly("onboardingScreen");
   }
 
-  $("sendTraining").addEventListener("click", async () => {
-    try {
-      await sendToCoach("training", {
-        stage: $("stage").value, position: $("trainPosition").value,
-        areas: [...$("focus").selectedOptions].map(option => option.value),
-        time: $("time").value, equipment: $("equipment").value,
-        notes: $("trainNotes").value.trim()
-      });
-    } catch (error) { showError(error); }
-  });
+  function ageFromDate(dateValue) {
+    if (!dateValue) return null;
+    const birth = new Date(`${dateValue}T00:00:00`);
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    const birthdayNotReached =
+      today.getMonth() < birth.getMonth() ||
+      (today.getMonth() === birth.getMonth() && today.getDate() < birth.getDate());
+    if (birthdayNotReached) age--;
+    return age;
+  }
 
-  $("sendPosition").addEventListener("click", async () => {
-    try { await sendToCoach("position", { interest: $("positionLike").value, notes: $("positionNotes").value.trim() }); }
-    catch (error) { showError(error); }
-  });
-
-  $("sendNutrition").addEventListener("click", async () => {
-    try {
-      await sendToCoach("nutrition", {
-        meal: $("mealKind").value, preference: $("foodStyle").value,
-        foodsToAvoid: $("avoid").value.trim(), budget: $("budget").value,
-        notes: $("foodNotes").value.trim()
-      });
-    } catch (error) { showError(error); }
-  });
-
-  $("sendRecovery").addEventListener("click", async () => {
-    try {
-      await sendToCoach("recovery", {
-        need: $("recoveryNeed").value, energy: $("energy").value,
-        notes: $("recoveryNotes").value.trim()
-      });
-    } catch (error) { showError(error); }
-  });
-
-  $("sendProgress").addEventListener("click", async () => {
-    try { await sendToCoach("progress", { type: $("logType").value, text: $("logText").value.trim() }); }
-    catch (error) { showError(error); }
-  });
-
-  $("sendProfile").addEventListener("click", async () => {
-    try {
-      await sendToCoach("profile", {
-        name: $("playerName").value.trim(), country: $("country").value,
-        journey: $("journey").value, level: $("level").value,
-        position: $("profilePosition").value, goal: $("profileGoal").value.trim()
-      });
-    } catch (error) { showError(error); }
-  });
-
-  $("sendGuardian").addEventListener("click", async () => {
-    try {
-      await sendToCoach("guardian_access", {
-        request: "Please contact me about setting up guardian access."
-      });
-    } catch (error) { showError(error); }
-  });
-
-  $("refreshCoach").addEventListener("click", loadCoachInbox);
-
-  async function loadCoachInbox() {
-    if (!user || user.app_metadata?.role !== "coach") {
-      $("coachList").innerHTML = '<p class="muted">This account does not have Coach access.</p>';
+  function renderQuizResults() {
+    const preference = $("quizAnswer")?.value;
+    if (!preference) {
+      $("quizResults").innerHTML = `<p class="notice">Choose an answer to see some roles to explore.</p>`;
       return;
     }
-    const { data, error } = await client.from("coach_requests")
-      .select("id, player_id, category, payload, status, created_at")
-      .order("created_at", { ascending: false }).limit(100);
-    if (error) { $("coachList").textContent = error.message; return; }
-    $("coachList").innerHTML = (data || []).map(item => `
-      <article class="result">
-        <div class="topline"><strong>${esc(item.category)}</strong><span class="pill">${esc(item.status)}</span></div>
-        <p class="small muted">Player account: ${esc(item.player_id)} · ${esc(new Date(item.created_at).toLocaleString())}</p>
-        <pre style="white-space:pre-wrap;overflow-wrap:anywhere">${esc(JSON.stringify(item.payload, null, 2))}</pre>
-      </article>
-    `).join("") || '<p class="muted">No requests yet.</p>';
+
+    const ideas = {
+      hands: [
+        ["Goalkeeper (GK)", "Organises, reacts and protects the goal."],
+        ["Center-Back (CB)", "Reads danger and helps organise the defence."],
+        ["Sweeper (SW)", "Reads danger and covers space behind the defence."]
+      ],
+      defend: [
+        ["Center-Back (CB)", "Protects central areas and reads forward play."],
+        ["Left-Back (LB)", "Defends wide areas and can support attacks."],
+        ["Defensive Midfielder (DM)", "Helps protect the defence and connect play."]
+      ],
+      pass: [
+        ["Central Midfielder (CM)", "Connects play through passing and movement."],
+        ["Defensive Midfielder (DM)", "Receives under pressure and helps build attacks."],
+        ["Attacking Midfielder (AM)", "Links midfield and forwards."]
+      ],
+      create: [
+        ["Attacking Midfielder (AM)", "Finds space and creates chances centrally."],
+        ["Left Winger (LW)", "Creates chances from wide areas."],
+        ["Central Midfielder (CM)", "Links teammates and helps create attacks."]
+      ],
+      finish: [
+        ["Striker (ST)", "Finds space near goal and finishes chances."],
+        ["Center-Forward (CF)", "Links play and threatens the goal."],
+        ["Right Winger (RW)", "Attacks from wide areas and can score."]
+      ],
+      run: [
+        ["Left Winger (LW)", "Uses wide space to move the team forward."],
+        ["Right Wing-Back (RWB)", "Times runs down the side of the pitch."],
+        ["Striker (ST)", "Times runs between or behind defenders."]
+      ]
+    };
+
+    $("quizResults").innerHTML = `<div class="result"><h3>Positions you could explore</h3>${
+      ideas[preference].map(([name, description]) =>
+        `<div class="option"><strong>${escapeHtml(name)}</strong><p>${escapeHtml(description)}</p><button class="inline-link" type="button" data-position-choice="${escapeHtml(name)}">Choose ${escapeHtml(name)}</button></div>`
+      ).join("")
+    }<p class="small muted">These are options to try, not a permanent decision.</p></div>`;
   }
 
-  // If this page was opened from a saved browser session, restore that account.
-  if (storedUrl && storedKey) {
-    // connect() above also restores the existing Supabase session.
+  $("question").addEventListener("click", event => {
+    if (event.target.id === "openQuizButton") show("positionQuiz");
+    if (event.target.id === "showQuizResults") renderQuizResults();
+
+    if (event.target.id === "askCoachCall") {
+      coachCallRequested = true;
+      answers.position = "Position chat requested";
+      document.querySelectorAll('input[name="answer"]').forEach(input => { input.checked = false; });
+      $("quizResults").innerHTML = `<p class="notice">Your request for a position call with Coach will be saved with your profile.</p>`;
+    }
+
+    const choice = event.target.closest("[data-position-choice]");
+    if (choice) {
+      coachCallRequested = false;
+      answers.position = choice.dataset.positionChoice;
+      document.querySelectorAll('input[name="answer"]').forEach(input => {
+        input.checked = input.value === answers.position;
+      });
+      hide("positionQuiz");
+      say(`${answers.position} selected. Continue to choose what you want help with.`);
+    }
+  });
+
+  $("stepBackButton").addEventListener("click", () => {
+    if (stepIndex > 0) {
+      stepIndex--;
+      renderStep();
+    }
+  });
+
+  $("leaveSetupButton").addEventListener("click", () => {
+    if (currentStepIsSignup) {
+      showOnly("welcomeScreen");
+    } else {
+      say("Finish your setup before opening your dashboard.");
+    }
+  });
+
+  $("stepNextButton").addEventListener("click", async () => {
+    const step = stepList[stepIndex];
+    const answer = readAnswer(step);
+    const empty = Array.isArray(answer) ? answer.length === 0 : !answer;
+
+    if (step.required && empty) {
+      return say("Choose an answer before continuing.", true);
+    }
+
+    answers[step.key] = answer;
+
+    if (step.key === "position") {
+      coachCallRequested = answer === "Position chat requested";
+    }
+
+    if (step.key === "dateOfBirth" && ageFromDate(answer) < 16) {
+      stepList = stepList.map(item =>
+        item.key === "guardianEmail" ? { ...item, required: true } : item
+      );
+    }
+
+    if (step.key === "guardianEmail" && ageFromDate(answers.dateOfBirth) < 16) {
+      if (!answer) return say("A parent or guardian email is required for players under 16.", true);
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(answer)) {
+        return say("Enter a valid parent or guardian email address.", true);
+      }
+    }
+
+    if (stepIndex < stepList.length - 1) {
+      stepIndex++;
+      renderStep();
+      return;
+    }
+
+    await finishSetup();
+  });
+
+  async function finishSetup() {
+    if (!currentUser) {
+      return say("Sign in again to finish setting up your player profile.", true);
+    }
+
+    const age = ageFromDate(answers.dateOfBirth);
+    const profile = {
+      name: currentUser.user_metadata?.display_name || answers.display_name || "",
+      email: currentUser.email || "",
+      dateOfBirth: answers.dateOfBirth || "",
+      age,
+      nationality: answers.nationality || "",
+      country: answers.country || "",
+      gender: answers.gender || "Prefer not to say",
+      journey: answers.journey || "",
+      position: answers.position || "",
+      positionCoachCallRequested: coachCallRequested,
+      developmentFocus: answers.goals || [],
+      preferredFoot: answers.preferredFoot || "",
+      trainingFrequency: answers.trainingFrequency || "",
+      trainingDuration: answers.trainingDuration || "",
+      trainingSpace: answers.trainingSpace || { selected: [], notes: "" },
+      nutritionPreferences: answers.nutritionPreferences || [],
+      nutritionNotes: answers.nutritionNotes || "",
+      matchDayPreferences: answers.matchDayPreferences || [],
+      recoveryPreferences: answers.recoveryPreferences || [],
+      guardianEmail: age < 16 ? answers.guardianEmail : "",
+      guardianApprovalStatus: age < 16 ? "pending" : "not_required"
+    };
+
+    try {
+      const { error: saveError } = await supabaseClient
+        .from("player_records")
+        .upsert({
+          player_id: currentUser.id,
+          data: { profile, progress: [], recovery: [] },
+          updated_at: new Date().toISOString()
+        }, { onConflict: "player_id" });
+
+      if (saveError) throw saveError;
+
+      if (coachCallRequested) {
+        const { error: coachError } = await supabaseClient
+          .from("coach_requests")
+          .insert({
+            player_id: currentUser.id,
+            category: "position-exploration",
+            payload: { request: "Please arrange a call to help me explore positions." }
+          });
+
+        if (coachError) {
+          say("Your profile is saved, but the Coach call request did not send: " + coachError.message, true);
+        }
+      }
+
+      await supabaseClient.auth.updateUser({
+        data: { onboarding_started: true, onboarding_complete: true }
+      });
+
+      localStorage.removeItem(`${draftKey}:${(currentUser.email || "").toLowerCase()}`);
+      renderApp();
+      showOnly("appScreen");
+      show("signOutButton");
+      say("Your player profile is saved.");
+    } catch (error) {
+      say(error.message || "We couldn’t save your profile.", true);
+    }
   }
+
+  async function enterApp(user) {
+    currentUser = user;
+
+    const draftText = localStorage.getItem(`${draftKey}:${(user.email || "").toLowerCase()}`);
+    const hasUnfinishedSetup =
+      user.user_metadata?.onboarding_started === true &&
+      user.user_metadata?.onboarding_complete !== true;
+
+    if (hasUnfinishedSetup && draftText) {
+      try { answers = JSON.parse(draftText); } catch { answers = {}; }
+      startPlayerQuestions();
+      return;
+    }
+
+    renderApp();
+    showOnly("appScreen");
+    show("signOutButton");
+  }
+
+  function renderApp() {
+    const profile = window.playerProfile || {};
+    const name = profile.name || currentUser?.user_metadata?.display_name || "Player";
+    $("welcomeTitle").textContent = `Welcome, ${name}.`;
+
+    if (!profile.name && currentUser) {
+      loadSavedProfile().then(saved => {
+        if (!saved) return;
+        window.playerProfile = saved;
+        renderAppWithProfile(saved);
+      });
+    } else {
+      renderAppWithProfile(profile);
+    }
+  }
+
+  function renderAppWithProfile(profile) {
+    const fields = [
+      ["Email", currentUser?.email || ""],
+      ["Country", profile.country || "Not added"],
+      ["Football pathway", profile.journey || "Not added"],
+      ["Position", profile.position || "Not added"],
+      ["Development focus", Array.isArray(profile.developmentFocus) ? profile.developmentFocus.join(", ") : "Not added"],
+      ["Training each week", profile.trainingFrequency || "Not added"],
+      ["Usual session length", profile.trainingDuration || "Not added"]
+    ];
+
+    $("playerSummary").innerHTML = fields.map(([label, value]) =>
+      `<p><strong>${escapeHtml(label)}:</strong> ${escapeHtml(value)}</p>`
+    ).join("");
+
+    $("profileDetails").innerHTML = fields.map(([label, value]) =>
+      `<div class="list-item"><strong>${escapeHtml(label)}</strong><p>${escapeHtml(value)}</p></div>`
+    ).join("");
+
+    const trainingSpace = profile.trainingSpace || {};
+    const equipment = [
+      ...(trainingSpace.selected || []),
+      trainingSpace.notes || ""
+    ].filter(Boolean).join(" · ") || "Not added";
+
+    $("trainingSummary").innerHTML = `
+      <p><strong>Position:</strong> ${escapeHtml(profile.position || "Not added")}</p>
+      <p><strong>Focus:</strong> ${escapeHtml((profile.developmentFocus || []).join(", ") || "Not added")}</p>
+      <p><strong>Sessions:</strong> ${escapeHtml(profile.trainingFrequency || "Not added")} · ${escapeHtml(profile.trainingDuration || "Not added")}</p>
+      <p><strong>Space and equipment:</strong> ${escapeHtml(equipment)}</p>
+    `;
+  }
+
+  async function loadSavedProfile() {
+    if (!supabaseClient || !currentUser) return null;
+
+    const { data, error } = await supabaseClient
+      .from("player_records")
+      .select("data")
+      .eq("player_id", currentUser.id)
+      .maybeSingle();
+
+    if (error) {
+      say("Signed in, but the player record could not load: " + error.message, true);
+      return null;
+    }
+
+    const profile = data?.data?.profile || null;
+    window.playerProfile = profile;
+    return profile;
+  }
+
+  document.querySelectorAll("[data-page]").forEach(button => {
+    button.addEventListener("click", () => {
+      document.querySelectorAll(".page").forEach(page => page.classList.remove("active"));
+      document.querySelectorAll("[data-page]").forEach(item => item.classList.remove("active"));
+      document.getElementById(button.dataset.page + "Page").classList.add("active");
+      button.classList.add("active");
+    });
+  });
+
+  $("brandHome").addEventListener("click", () => {
+    if (currentUser) {
+      renderApp();
+      showOnly("appScreen");
+    } else {
+      showOnly("welcomeScreen");
+    }
+  });
+
+  $("signOutButton").addEventListener("click", async () => {
+    if (supabaseClient) {
+      const { error } = await supabaseClient.auth.signOut();
+      if (error) return say(error.message, true);
+    }
+    currentUser = null;
+    hide("signOutButton");
+    showOnly("welcomeScreen");
+    say("You have signed out.");
+  });
 })();
 </script>
 </body>
