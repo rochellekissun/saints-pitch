@@ -309,6 +309,7 @@
       <button id="signOutButton" class="btn hidden">Sign out</button>
     </div>
   </header>
+    </header>
 
   <div id="message" class="hidden" role="status" aria-live="polite"></div>
 
@@ -617,9 +618,8 @@
         localStorage.setItem(`${draftKey}:${email}`, JSON.stringify({ display_name: name }));
 
         if (data.session?.user) {
-          answers = { display_name: name };
-          startPlayerQuestions();
-        } else {
+          location.href = "onboarding.html";
+                  } else {
           say("Account created. Check your email to verify it, then return here and sign in to finish your player setup.");
           mode = "login";
           renderAccountMode();
@@ -759,7 +759,7 @@
     "Central Midfielder (CM)": {
       "Technical": ["First touch in central spaces", "Passing with both feet", "Receiving on the half-turn", "Carrying the ball into space"],
       "Tactical": ["Finding space between opponents", "Supporting the player on the ball", "Switching play", "Moving to help in attack and defence"],
-      "Speed & Agility": ["Quick turns in midfield", "Moving into passing lanes", "Changing direction to support play"],
+            "Speed & Agility": ["Quick turns in midfield", "Moving into passing lanes", "Changing direction to support play"],
       "Endurance & Power": ["Building steady match fitness", "Safe whole-body strength", "Repeating runs throughout a match"],
       "Psychological & Cognitive": ["Scanning before the ball arrives", "Choosing when to pass or carry", "Staying composed after mistakes"]
     },
@@ -909,7 +909,7 @@
           <select id="quizAnswer">
             <option value="">Choose one</option>
             <option value="hands">Organising, reacting and defending</option>
-            <option value="defend">Protecting space and stopping attacks</option>
+                        <option value="defend">Protecting space and stopping attacks</option>
             <option value="pass">Passing and linking play</option>
             <option value="create">Creating chances for teammates</option>
             <option value="finish">Attacking the goal and finishing</option>
@@ -1058,8 +1058,7 @@
     if (step.key === "dateOfBirth" && ageFromDate(answer) < 16) {
       steps.find(item => item.key === "guardianEmail").required = true;
     }
-
-    if (stepIndex < steps.length - 1) {
+        if (stepIndex < steps.length - 1) {
       stepIndex++;
       renderStep();
       return;
@@ -1134,9 +1133,8 @@
       user.user_metadata?.onboarding_started === true &&
       user.user_metadata?.onboarding_complete !== true;
 
-    if (unfinished && draftText) {
-      try { answers = JSON.parse(draftText); } catch { answers = {}; }
-      startPlayerQuestions();
+    if (unfinished) {
+      location.href = "onboarding.html";
       return;
     }
 
